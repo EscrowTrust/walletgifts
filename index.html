@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet Connect</title>
+    <title>TON Wallet Connect</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background-color: #000;
+            background: #000;
             color: #fff;
             font-family: Arial, sans-serif;
             display: flex;
@@ -20,36 +20,76 @@
             text-align: center;
         }
         button {
-            background-color: #0088cc;
+            background: #0088cc;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-top: 20px;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
             cursor: pointer;
+            margin-top: 30px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #006699;
+        }
+        .status {
+            margin-top: 20px;
+            color: #aaa;
         }
     </style>
 </head>
 <body>
-    <h1>🔗 Привязка кошелька</h1>
-    <p>Нажмите кнопку, чтобы привязать Wallet Telegram</p>
+    <h1>🔗 Привязка TON кошелька</h1>
+    <p>Нажмите кнопку ниже для подключения</p>
     
-    <button onclick="connectWallet()">Привязать кошелёк</button>
+    <button id="connectBtn">Привязать кошелёк</button>
+    <div id="status" class="status"></div>
 
     <script>
-        function connectWallet() {
-            const user = Telegram.WebApp.initDataUnsafe.user;
-            const walletData = {
-                user_id: user?.id,
-                username: user?.username,
-                wallet_type: "telegram_wallet",
-                timestamp: Math.floor(Date.now() / 1000)
-            };
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('connectBtn');
+            const status = document.getElementById('status');
             
-            Telegram.WebApp.sendData(JSON.stringify(walletData));
-            Telegram.WebApp.close();
-        }
+            // Проверяем доступность API
+            if (!window.Telegram || !Telegram.WebApp) {
+                status.textContent = "Ошибка: Telegram WebApp API не загружен";
+                btn.disabled = true;
+                return;
+            }
+            
+            // Инициализируем WebApp
+            Telegram.WebApp.ready();
+            status.textContent = "WebApp инициализирован";
+            
+            btn.addEventListener('click', function() {
+                try {
+                    if (!Telegram.WebApp.initDataUnsafe) {
+                        status.textContent = "Ошибка: данные не получены";
+                        return;
+                    }
+                    
+                    const user = Telegram.WebApp.initDataUnsafe.user;
+                    const walletData = {
+                        user_id: user?.id,
+                        username: user?.username,
+                        first_name: user?.first_name,
+                        wallet_type: "telegram_wallet",
+                        auth_date: Telegram.WebApp.initDataUnsafe.auth_date,
+                        hash: Telegram.WebApp.initDataUnsafe.hash
+                    };
+                    
+                    status.textContent = "Получение данных...";
+                    
+                    Telegram.WebApp.sendData(JSON.stringify(walletData));
+                    Telegram.WebApp.close();
+                    
+                } catch (e) {
+                    status.textContent = "Ошибка: " + e.message;
+                    console.error(e);
+                }
+            });
+        });
     </script>
 </body>
 </html>
