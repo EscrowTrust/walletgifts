@@ -7,9 +7,9 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background: #000;
+            background: #121212;
             color: #fff;
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,163 +19,103 @@
             padding: 20px;
             text-align: center;
         }
-        h1 {
-            color: #0088cc;
-            margin-bottom: 10px;
-        }
-        p {
-            margin-bottom: 30px;
-            color: #ccc;
+        .container {
+            max-width: 300px;
         }
         button {
-            background: linear-gradient(135deg, #0088cc, #006699);
+            background: linear-gradient(135deg, #0077FF, #00C6FF);
             color: white;
             border: none;
             padding: 16px 32px;
-            border-radius: 12px;
+            border-radius: 50px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 20px 0;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 119, 255, 0.3);
+            width: 100%;
         }
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-        button:active {
-            transform: translateY(0);
+            box-shadow: 0 6px 20px rgba(0, 119, 255, 0.4);
         }
         .status {
-            margin-top: 25px;
-            padding: 10px;
+            margin-top: 20px;
+            padding: 12px;
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.1);
-            max-width: 80%;
+            font-size: 14px;
         }
-        .loader {
-            display: none;
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #0088cc;
-            animation: spin 1s ease-in-out infinite;
-            margin: 10px auto;
+        .success {
+            color: #00ff88;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .error {
+            color: #ff5555;
         }
     </style>
 </head>
 <body>
-    <h1>🔗 Привязка TON кошелька</h1>
-    <p>Подключите кошелёк для участия в конкурсе</p>
-    
-    <button id="connectBtn">
-        <span id="btnText">Привязать кошелёк</span>
-        <div id="loader" class="loader"></div>
-    </button>
-    <div id="status" class="status"></div>
+    <div class="container">
+        <h1>🎉 Привязка кошелька</h1>
+        <p>Для участия в конкурсе подключите Telegram Wallet</p>
+        
+        <button id="connectBtn">ПОДКЛЮЧИТЬ</button>
+        <div id="status" class="status">Готово к подключению</div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const btn = document.getElementById('connectBtn');
-            const btnText = document.getElementById('btnText');
-            const loader = document.getElementById('loader');
             const status = document.getElementById('status');
             
-            // Проверка окружения WebApp
-            function isTelegramWebApp() {
-                return window.Telegram && Telegram.WebApp && Telegram.WebApp.initData;
+            // 1. Проверяем что мы в Telegram WebApp
+            if (!window.Telegram?.WebApp?.initData) {
+                status.textContent = "Откройте это в Telegram через бота";
+                status.classList.add('error');
+                btn.disabled = true;
+                return;
             }
             
-            // Показываем статус
-            function showStatus(text, isError = false) {
-                status.textContent = text;
-                status.style.color = isError ? '#ff5555' : '#aaa';
-            }
+            // 2. Инициализируем WebApp
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
             
-            // Показываем загрузку
-            function setLoading(state) {
-                btn.disabled = state;
-                btnText.style.display = state ? 'none' : 'inline';
-                loader.style.display = state ? 'block' : 'none';
-            }
-            
-            // Инициализация WebApp
-            function initWebApp() {
-                if (!isTelegramWebApp()) {
-                    showStatus('Это приложение работает только в Telegram', true);
+            // 3. Обработчик кнопки
+            btn.addEventListener('click', async function() {
+                try {
                     btn.disabled = true;
-                    return false;
-                }
-                
-                try {
-                    Telegram.WebApp.ready();
-                    Telegram.WebApp.expand();
-                    Telegram.WebApp.enableClosingConfirmation();
-                    return true;
-                } catch (e) {
-                    showStatus('Ошибка инициализации: ' + e.message, true);
-                    return false;
-                }
-            }
-            
-            // Основная функция привязки
-            async function connectWallet() {
-                if (!initWebApp()) return;
-                
-                setLoading(true);
-                showStatus('Инициализация подключения...');
-                
-                try {
-                    // Получаем данные пользователя
-                    const initData = Telegram.WebApp.initDataUnsafe;
-                    if (!initData?.user) {
-                        throw new Error('Данные пользователя не получены');
-                    }
+                    status.textContent = "Подключаем кошелёк...";
                     
-                    const user = initData.user;
+                    // 4. Формируем данные
+                    const user = Telegram.WebApp.initDataUnsafe.user;
                     const walletData = {
                         provider: 'telegram_wallet',
                         user_id: user.id,
                         username: user.username,
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        language_code: user.language_code,
-                        auth_date: initData.auth_date,
-                        hash: initData.hash
+                        auth_date: Telegram.WebApp.initDataUnsafe.auth_date,
+                        hash: Telegram.WebApp.initDataUnsafe.hash
                     };
                     
-                    showStatus('Отправка данных...');
-                    
-                    // Отправляем данные в бота
+                    // 5. Отправляем данные
                     Telegram.WebApp.sendData(JSON.stringify(walletData));
                     
-                    // Даем пользователю увидеть сообщение
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    // 6. Даем пользователю увидеть подтверждение
+                    status.textContent = "Кошелёк успешно привязан!";
+                    status.classList.add('success');
                     
-                    // Закрываем WebApp
-                    Telegram.WebApp.close();
+                    // 7. Закрываем с задержкой
+                    setTimeout(() => {
+                        Telegram.WebApp.close();
+                    }, 1500);
                     
                 } catch (error) {
-                    setLoading(false);
-                    showStatus('Ошибка: ' + error.message, true);
-                    console.error('Wallet connect error:', error);
+                    status.textContent = "Ошибка: " + error.message;
+                    status.classList.add('error');
+                    btn.disabled = false;
+                    console.error(error);
                 }
-            }
-            
-            // Назначаем обработчик кнопки
-            btn.addEventListener('click', connectWallet);
-            
-            // Первоначальная инициализация
-            if (isTelegramWebApp()) {
-                showStatus('Готово к подключению');
-            } else {
-                showStatus('Откройте в Telegram WebApp', true);
-            }
+            });
         });
     </script>
 </body>
