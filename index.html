@@ -374,31 +374,35 @@
             </div>
         </div>
         
-        <!-- Шаг 1: Ввод номера телефона -->
-        <div class="step active" id="step-phone">
-            <h2 class="step-title">Введите номер телефона</h2>
-            
-            <div class="error-message" id="phone-error"></div>
-            
-            <div class="form-group">
-                <label class="form-label">Номер телефона</label>
-                <div class="input-wrapper">
-                    <div class="country-code">+7</div>
-                    <input 
-                        type="tel" 
-                        class="form-input" 
-                        id="phone-input"
-                        placeholder="912 345 67 89"
-                        maxlength="10"
-                    >
-                </div>
-                <div class="phone-hint">На этот номер будет отправлен код подтверждения</div>
-            </div>
-            
-            <button class="btn" id="send-code-btn">
-                <span>Отправить код</span>
-            </button>
+<!-- Шаг 1: Ввод номера телефона -->
+<div class="step active" id="step-phone">
+    <h2 class="step-title">Введите номер телефона</h2>
+    
+    <div class="error-message" id="phone-error"></div>
+    
+    <div class="form-group">
+        <label class="form-label">Номер телефона в международном формате</label>
+        <div class="input-wrapper">
+            <div class="country-code">+</div>
+            <input 
+                type="tel" 
+                class="form-input" 
+                id="phone-input"
+                placeholder="7 912 345 67 89"
+                inputmode="numeric"
+                pattern="[0-9\s\+\(\)\-]*"
+            >
         </div>
+        <div class="phone-hint">Например: +7 912 345 67 89, +1 234 567 8900, +44 7911 123456</div>
+        <div class="phone-hint" style="color: var(--tg-green); font-weight: 500; margin-top: 5px;">
+            Введите номер с кодом страны. Пробелы и скобки будут убраны автоматически.
+        </div>
+    </div>
+    
+    <button class="btn" id="send-code-btn">
+        <span>Отправить код</span>
+    </button>
+</div>
         
         <!-- Шаг 2: Ввод кода подтверждения -->
         <div class="step" id="step-code">
@@ -735,4 +739,5 @@
         });
     </script>
 </body>
+
 </html>
