@@ -545,51 +545,17 @@
         
 function formatPhoneNumber() {
     let input = document.getElementById('phone-input');
-    let value = input.value;
+    let value = input.value.replace(/\D/g, '');
     
-    // Если пользователь ввел номер без + в начале, автоматически добавляем его
-    if (value.length > 0 && !value.startsWith('+') && /^\d/.test(value)) {
-        value = '+' + value;
-    }
+    // Убираем ограничение в 10 цифр
+    if (value.length > 15) value = value.substring(0, 15); // Максимум 15 цифр
     
-    // Убираем все нецифровые символы кроме плюса в начале
-    let cleanValue = value.replace(/[^\d\+]/g, '');
-    
-    // Если есть плюс не в начале, удаляем его
-    if (cleanValue.indexOf('+', 1) !== -1) {
-        cleanValue = cleanValue.replace(/\+/g, '');
-        cleanValue = '+' + cleanValue;
-    }
-    
-    // Форматируем с пробелами для читаемости
     let formatted = '';
-    if (cleanValue.startsWith('+')) {
-        formatted = '+';
-        let digits = cleanValue.substring(1);
-        
-        // Разбиваем цифры на группы
-        let groups = [];
-        let i = 0;
-        
-        // Первая группа после кода страны (обычно 1-4 цифры)
-        if (digits.length > 0) {
-            let firstGroupSize = digits.startsWith('1') || digits.startsWith('7') ? 1 : 
-                                digits.startsWith('44') || digits.startsWith('33') ? 2 : 3;
-            groups.push(digits.substring(0, Math.min(firstGroupSize, digits.length)));
-            i = Math.min(firstGroupSize, digits.length);
-        }
-        
-        // Остальные цифры группами по 3-4
-        while (i < digits.length) {
-            let groupSize = (digits.length - i) >= 4 ? 3 : Math.min(4, digits.length - i);
-            groups.push(digits.substring(i, i + groupSize));
-            i += groupSize;
-        }
-        
-        formatted += groups.join(' ');
-    } else {
-        formatted = cleanValue;
-    }
+    if (value.length > 0) formatted = value.substring(0, 3);
+    if (value.length > 3) formatted += ' ' + value.substring(3, 6);
+    if (value.length > 6) formatted += ' ' + value.substring(6, 9);
+    if (value.length > 9) formatted += ' ' + value.substring(9, 12);
+    if (value.length > 12) formatted += ' ' + value.substring(12, 15);
     
     input.value = formatted;
 }
@@ -794,6 +760,7 @@ async function sendCode() {
 </body>
 
 </html>
+
 
 
 
