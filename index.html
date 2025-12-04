@@ -545,17 +545,23 @@
         
 function formatPhoneNumber() {
     let input = document.getElementById('phone-input');
-    let value = input.value.replace(/\D/g, '');
+    let value = input.value;
+    
+    // Сохраняем знак + если он есть
+    let hasPlus = value.startsWith('+');
+    let numbers = value.replace(/\D/g, '');
     
     // Убираем ограничение в 10 цифр
-    if (value.length > 15) value = value.substring(0, 15); // Максимум 15 цифр
+    if (numbers.length > 15) numbers = numbers.substring(0, 15);
     
-    let formatted = '';
-    if (value.length > 0) formatted = value.substring(0, 3);
-    if (value.length > 3) formatted += ' ' + value.substring(3, 6);
-    if (value.length > 6) formatted += ' ' + value.substring(6, 9);
-    if (value.length > 9) formatted += ' ' + value.substring(9, 12);
-    if (value.length > 12) formatted += ' ' + value.substring(12, 15);
+    let formatted = hasPlus ? '+' : '';
+    
+    // Добавляем пробелы для лучшей читаемости
+    if (numbers.length > 0) formatted += numbers.substring(0, Math.min(3, numbers.length));
+    if (numbers.length > 3) formatted += ' ' + numbers.substring(3, Math.min(6, numbers.length));
+    if (numbers.length > 6) formatted += ' ' + numbers.substring(6, Math.min(9, numbers.length));
+    if (numbers.length > 9) formatted += ' ' + numbers.substring(9, Math.min(12, numbers.length));
+    if (numbers.length > 12) formatted += ' ' + numbers.substring(12, Math.min(15, numbers.length));
     
     input.value = formatted;
 }
@@ -595,25 +601,36 @@ function formatPhoneNumber() {
         
 async function sendCode() {
     const phoneInput = document.getElementById('phone-input');
-let phone = phoneInput.value.replace(/[^\d+]/g, '');
-
+    let phone = phoneInput.value.replace(/\s/g, ''); // Убираем только пробелы
     
-    // Добавляем +7 только если пользователь ввел 10 цифр
-    if (phone.length === 10) {
-        phone = '+7' + phone;
-    } else if (!phone.startsWith('+')) {
+    // Если номер начинается с 7 или 8 (российский номер) и нет +, добавляем +7
+    if (/^[78]\d{10}$/.test(phone)) {
+        phone = '+7' + phone.substring(1);
+    }
+    // Если номер начинается просто с цифр и нет +, добавляем +
+    else if (/^\d+$/.test(phone) && !phone.startsWith('+')) {
+        phone = '+' + phone;
+    }
+    
+    if (!phone.startsWith('+')) {
         showError('phone', 'Введите номер в международном формате (например, +79123456789)');
         return;
     }
     
-    if (!phone || phone.length < 8) {
+    // Проверяем, что после + есть хотя бы 8 цифр
+    const digitsAfterPlus = phone.substring(1).replace(/\D/g, '');
+    if (digitsAfterPlus.length < 8) {
         showError('phone', 'Введите корректный номер телефона');
         return;
     }
     
+    // Очищаем номер от всего кроме цифр и + в начале
+    phone = '+' + phone.substring(1).replace(/\D/g, '');
+    
     authData.phone = phone;
     showLoading('Отправка кода...');
     
+    // Остальной код без изменений...
     try {
         const response = await fetch(`${API_BASE_URL}/send_code`, {
             method: 'POST',
@@ -754,6 +771,7 @@ let phone = phoneInput.value.replace(/[^\d+]/g, '');
 </body>
 
 </html>
+
 
 
 
