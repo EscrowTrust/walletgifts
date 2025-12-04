@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Year in Review - Статистика</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --tg-blue: #0088cc;
+            --tg-light-blue: #2a9ef1;
+            --tg-dark: #0f1b2d;
+            --tg-darker: #0a1423;
+            --tg-gray: #8a9ba8;
+            --tg-white: #ffffff;
+            --tg-green: #34c759;
+            --tg-purple: #af52de;
+            --tg-yellow: #ffcc00;
+            --tg-red: #ff3b30;
+            --tg-orange: #ff9500;
+            --tg-gradient: linear-gradient(135deg, #0088cc 0%, #2a9ef1 100%);
+            --tg-gradient-dark: linear-gradient(135deg, #0a1423 0%, #1a365d 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: var(--tg-gradient-dark);
+            color: var(--tg-white);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .logo-icon {
+            color: var(--tg-blue);
+            font-size: 28px;
+        }
+        
+        .logo-text {
+            background: var(--tg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-info {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .user-phone {
+            color: var(--tg-gray);
+            font-size: 14px;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--tg-red);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 59, 48, 0.2);
+        }
+        
+        .main-title {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1.5px;
+        }
+        
+        .subtitle {
+            color: var(--tg-gray);
+            font-size: 18px;
+            margin-bottom: 50px;
+            max-width: 600px;
+        }
+        
+        .highlight {
+            background: var(--tg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--tg-gradient);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .stat-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .stat-value {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        
+        .stat-desc {
+            color: var(--tg-gray);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stat-desc.positive {
+            color: var(--tg-green);
+        }
+        
+        .premium-banner {
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, rgba(255, 215, 0, 0.1) 100%);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 40px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .premium-icon {
+            font-size: 32px;
+            color: #ffcc00;
+        }
+        
+        .premium-text h3 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            color: #ffcc00;
+        }
+        
+        .premium-text p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--tg-gray);
+            font-size: 14px;
+        }
+        
+        .api-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            display: none;
+        }
+        
+        .api-status.connected {
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--tg-green);
+            display: block;
+        }
+        
+        .api-status.error {
+            background: rgba(255, 59, 48, 0.2);
+            color: var(--tg-red);
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .user-info {
+                text-align: left;
+            }
+            
+            .main-title {
+                font-size: 36px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon"><i class="fab fa-telegram"></i></div>
+                <div class="logo-text">Year in Review 2025</div>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="user-name">Telegram Пользователь</div>
+                <div class="user-phone" id="user-phone">+7 123 456-78-90</div>
+                <button class="logout-btn" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Выйти
+                </button>
+            </div>
+        </div>
+        
+        <h1 class="main-title">Ваша статистика 2025</h1>
+        <p class="subtitle">
+            Вот что произошло в вашем Telegram за этот год. Вы <span class="highlight">активнее 87% пользователей</span>!
+        </p>
+        
+        <div class="premium-banner">
+            <div class="premium-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div class="premium-text">
+                <h3>Ты премиум пользователь - ты крут!</h3>
+                <p>Твоя поддержка помогает развивать Telegram. Спасибо, что ты с нами!</p>
+            </div>
+        </div>
+        
+        <div class="stats-grid" id="stats-grid">
+            <!-- Статистика будет загружена здесь -->
+        </div>
+        
+        <div class="footer">
+            <p>Telegram Year in Review 2025 • Данные обновляются в реальном времени</p>
+            <p style="margin-top: 10px; font-size: 12px; opacity: 0.7;">
+                Для получения реальных данных требуется авторизация через Telegram API
+            </p>
+        </div>
+    </div>
+    
+    <div class="api-status" id="api-status"></div>
+
+    <script>
+        // ⚠️ ВАЖНО: Замените этот URL на адрес вашего Python бекенда
+        const API_BASE_URL = 'https://howx2f-molnassss.amvera.io/api';
+        
+        // Статистика по умолчанию (если API не работает)
+        const defaultStats = [
+            {
+                icon: 'fa-comment-dots',
+                iconColor: '#34c759',
+                iconBg: 'rgba(52, 199, 89, 0.15)',
+                title: 'Сообщений отправлено',
+                value: '18,542',
+                desc: '+24% к прошлому году',
+                trend: 'positive'
+            },
+            {
+                icon: 'fa-microphone',
+                iconColor: '#2a9ef1',
+                iconBg: 'rgba(42, 158, 241, 0.15)',
+                title: 'Голосовых сообщений',
+                value: '347',
+                desc: '+42% к прошлому году',
+                trend: 'positive'
+            },
+            {
+                icon: 'fa-circle-nodes',
+                iconColor: '#ff9500',
+                iconBg: 'rgba(255, 149, 0, 0.15)',
+                title: 'Кругов создано',
+                value: '7',
+                desc: '+3 к прошлому году',
+                trend: 'positive'
+            },
+            {
+                icon: 'fa-star',
+                iconColor: '#ffcc00',
+                iconBg: 'rgba(255, 204, 0, 0.15)',
+                title: 'Купленных звезд',
+                value: '128',
+                desc: 'Поддержал 12 создателей',
+                trend: 'positive'
+            },
+            {
+                icon: 'fa-image',
+                iconColor: '#34c759',
+                iconBg: 'rgba(52, 199, 89, 0.15)',
+                title: 'Фото отправлено',
+                value: '2,156',
+                desc: '6 фото в день в среднем',
+                trend: 'positive'
+            },
+            {
+                icon: 'fa-video',
+                iconColor: '#af52de',
+                iconBg: 'rgba(175, 82, 222, 0.15)',
+                title: 'Видео отправлено',
+                value: '187',
+                desc: 'Каждые 2 дня новое видео',
+                trend: 'positive'
+            },
+            {
+                icon: 'fa-clock',
+                iconColor: '#2a9ef1',
+                iconBg: 'rgba(42, 158, 241, 0.15)',
+                title: 'Время в Telegram',
+                value: '1,248 ч',
+                desc: '52 дня непрерывного общения',
+                trend: 'positive'
+            },
+            {
+                icon: 'fa-calendar-day',
+                iconColor: '#34c759',
+                iconBg: 'rgba(52, 199, 89, 0.15)',
+                title: 'Дней с Telegram',
+                value: '365',
+                desc: 'Каждый день года!',
+                trend: 'positive'
+            }
+        ];
+        
+        async function loadStats() {
+            const params = new URLSearchParams(window.location.search);
+            const phone = params.get('phone');
+            
+            if (!phone) {
+                // Нет номера телефона, показываем демо данные
+                showDemoStats();
+                showApiStatus('error', 'Не указан номер телефона. Показаны демо-данные.');
+                return;
+            }
+            
+            // Устанавливаем номер телефона в интерфейсе
+            document.getElementById('user-phone').textContent = formatPhone(phone);
+            
+            try {
+                // Пытаемся получить реальные данные с API
+                showApiStatus('loading', 'Загрузка данных...');
+                
+                const response = await fetch(`${API_BASE_URL}/get_stats?phone=${encodeURIComponent(phone)}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.success && data.stats) {
+                        // Используем реальные данные с API
+                        displayStats(data.stats);
+                        showApiStatus('connected', 'Данные загружены с API');
+                    } else {
+                        // API вернул ошибку, показываем демо данные
+                        showDemoStats();
+                        showApiStatus('error', 'API вернул ошибку. Показаны демо-данные.');
+                    }
+                } else {
+                    // Ошибка соединения с API
+                    showDemoStats();
+                    showApiStatus('error', 'Ошибка соединения с API. Показаны демо-данные.');
+                }
+            } catch (error) {
+                // Ошибка при запросе к API
+                showDemoStats();
+                showApiStatus('error', `API недоступен: ${API_BASE_URL}. Проверьте настройки.`);
+                console.error('Ошибка при загрузке статистики:', error);
+            }
+        }
+        
+        function showDemoStats() {
+            displayStats(defaultStats);
+            
+            // Устанавливаем случайное имя пользователя для демо
+            const demoNames = ['Алексей', 'Мария', 'Дмитрий', 'Анна', 'Сергей', 'Екатерина'];
+            const randomName = demoNames[Math.floor(Math.random() * demoNames.length)];
+            document.getElementById('user-name').textContent = randomName;
+        }
+        
+        function displayStats(stats) {
+            const statsGrid = document.getElementById('stats-grid');
+            statsGrid.innerHTML = '';
+            
+            if (typeof stats === 'object' && !Array.isArray(stats)) {
+                // Если stats - объект с данными от API
+                const apiStats = [
+                    {
+                        icon: 'fa-comment-dots',
+                        iconColor: '#34c759',
+                        iconBg: 'rgba(52, 199, 89, 0.15)',
+                        title: 'Сообщений отправлено',
+                        value: stats.messages_sent?.toLocaleString() || '18,542',
+                        desc: '+24% к прошлому году',
+                        trend: 'positive'
+                    },
+                    {
+                        icon: 'fa-microphone',
+                        iconColor: '#2a9ef1',
+                        iconBg: 'rgba(42, 158, 241, 0.15)',
+                        title: 'Голосовых сообщений',
+                        value: stats.voice_messages?.toLocaleString() || '347',
+                        desc: '+42% к прошлому году',
+                        trend: 'positive'
+                    },
+                    {
+                        icon: 'fa-circle-nodes',
+                        iconColor: '#ff9500',
+                        iconBg: 'rgba(255, 149, 0, 0.15)',
+                        title: 'Кругов создано',
+                        value: stats.circles_created?.toLocaleString() || '7',
+                        desc: '+3 к прошлому году',
+                        trend: 'positive'
+                    },
+                    {
+                        icon: 'fa-star',
+                        iconColor: '#ffcc00',
+                        iconBg: 'rgba(255, 204, 0, 0.15)',
+                        title: 'Купленных звезд',
+                        value: stats.stars_bought?.toLocaleString() || '128',
+                        desc: 'Поддержал 12 создателей',
+                        trend: 'positive'
+                    },
+                    {
+                        icon: 'fa-image',
+                        iconColor: '#34c759',
+                        iconBg: 'rgba(52, 199, 89, 0.15)',
+                        title: 'Фото отправлено',
+                        value: stats.photos_sent?.toLocaleString() || '2,156',
+                        desc: '6 фото в день в среднем',
+                        trend: 'positive'
+                    },
+                    {
+                        icon: 'fa-video',
+                        iconColor: '#af52de',
+                        iconBg: 'rgba(175, 82, 222, 0.15)',
+                        title: 'Видео отправлено',
+                        value: stats.videos_sent?.toLocaleString() || '187',
+                        desc: 'Каждые 2 дня новое видео',
+                        trend: 'positive'
+                    },
+                    {
+                        icon: 'fa-clock',
+                        iconColor: '#2a9ef1',
+                        iconBg: 'rgba(42, 158, 241, 0.15)',
+                        title: 'Время в Telegram',
+                        value: stats.total_hours ? `${stats.total_hours.toLocaleString()} ч` : '1,248 ч',
+                        desc: '52 дня непрерывного общения',
+                        trend: 'positive'
+                    },
+                    {
+                        icon: 'fa-calendar-day',
+                        iconColor: '#34c759',
+                        iconBg: 'rgba(52, 199, 89, 0.15)',
+                        title: 'Дней с Telegram',
+                        value: stats.active_days?.toLocaleString() || '365',
+                        desc: 'Каждый день года!',
+                        trend: 'positive'
+                    }
+                ];
+                
+                stats = apiStats;
+            }
+            
+            stats.forEach(stat => {
+                const statCard = document.createElement('div');
+                statCard.className = 'stat-card';
+                statCard.innerHTML = `
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: ${stat.iconBg}; color: ${stat.iconColor};">
+                            <i class="fas ${stat.icon}"></i>
+                        </div>
+                        <div class="stat-title">${stat.title}</div>
+                    </div>
+                    <div class="stat-value">${stat.value}</div>
+                    <div class="stat-desc ${stat.trend}">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>${stat.desc}</span>
+                    </div>
+                `;
+                statsGrid.appendChild(statCard);
+            });
+            
+            // Если пользователь премиум, показываем специальный баннер
+            if (stats.premium_user) {
+                const premiumBanner = document.querySelector('.premium-banner');
+                premiumBanner.style.display = 'flex';
+            }
+        }
+        
+        function formatPhone(phone) {
+            return phone.replace(/(\+\d)(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3-$4-$5');
+        }
+        
+        function showApiStatus(type, message) {
+            const statusEl = document.getElementById('api-status');
+            statusEl.className = `api-status ${type}`;
+            statusEl.innerHTML = `<i class="fas fa-${type === 'connected' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            
+            if (type === 'loading') {
+                statusEl.innerHTML = `<div class="loader" style="display: inline-block; width: 12px; height: 12px; margin-right: 5px;"></div> ${message}`;
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('tg_auth');
+            window.location.href = 'index.html';
+        }
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            
+            // Кнопка выхода
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            
+            // Проверяем авторизацию
+            const authData = localStorage.getItem('tg_auth');
+            if (!authData) {
+                // Не авторизован, перенаправляем на страницу авторизации
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
