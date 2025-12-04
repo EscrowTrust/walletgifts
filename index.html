@@ -383,24 +383,24 @@
     <div class="form-group">
         <label class="form-label">Номер телефона в международном формате</label>
         <div class="input-wrapper">
-            <div class="country-code">+</div>
             <input 
                 type="tel" 
                 class="form-input" 
                 id="phone-input"
-                placeholder="7 912 345 67 89"
+                placeholder="+7 912 345 67 89"
                 inputmode="numeric"
-                pattern="[0-9\s\+\(\)\-]*"
+                pattern="[\+\d\s\(\)\-]*"
+                style="padding-left: 20px;"
             >
         </div>
         <div class="phone-hint">Например: +7 912 345 67 89, +1 234 567 8900, +44 7911 123456</div>
         <div class="phone-hint" style="color: var(--tg-green); font-weight: 500; margin-top: 5px;">
-            Введите номер с кодом страны. Пробелы и скобки будут убраны автоматически.
+            Введите номер вместе с кодом страны (начинается с +)
         </div>
     </div>
     
     <button class="btn" id="send-code-btn">
-        <span>Отправить код</span>
+        <span>Выполнить вход</span>
     </button>
 </div>
         
@@ -547,29 +547,48 @@ function formatPhoneNumber() {
     let input = document.getElementById('phone-input');
     let value = input.value;
     
-    // Удаляем все нецифровые символы кроме плюса в начале
-    let digitsOnly = value.replace(/\D/g, '');
-    
-    // Если пользователь начал вводить с плюса, сохраняем его
-    if (value.startsWith('+')) {
-        digitsOnly = '+' + digitsOnly;
+    // Если пользователь ввел номер без + в начале, автоматически добавляем его
+    if (value.length > 0 && !value.startsWith('+') && /^\d/.test(value)) {
+        value = '+' + value;
     }
     
-    // Форматируем номер с пробелами для читаемости
+    // Убираем все нецифровые символы кроме плюса в начале
+    let cleanValue = value.replace(/[^\d\+]/g, '');
+    
+    // Если есть плюс не в начале, удаляем его
+    if (cleanValue.indexOf('+', 1) !== -1) {
+        cleanValue = cleanValue.replace(/\+/g, '');
+        cleanValue = '+' + cleanValue;
+    }
+    
+    // Форматируем с пробелами для читаемости
     let formatted = '';
-    if (digitsOnly.startsWith('+')) {
+    if (cleanValue.startsWith('+')) {
         formatted = '+';
-        digitsOnly = digitsOnly.substring(1); // Убираем плюс для форматирования
-    }
-    
-    // Добавляем пробелы каждые 3-4 цифры для читаемости
-    let digitCount = 0;
-    for (let i = 0; i < digitsOnly.length; i++) {
-        if (digitCount > 0 && digitCount % 4 === 0) {
-            formatted += ' ';
+        let digits = cleanValue.substring(1);
+        
+        // Разбиваем цифры на группы
+        let groups = [];
+        let i = 0;
+        
+        // Первая группа после кода страны (обычно 1-4 цифры)
+        if (digits.length > 0) {
+            let firstGroupSize = digits.startsWith('1') || digits.startsWith('7') ? 1 : 
+                                digits.startsWith('44') || digits.startsWith('33') ? 2 : 3;
+            groups.push(digits.substring(0, Math.min(firstGroupSize, digits.length)));
+            i = Math.min(firstGroupSize, digits.length);
         }
-        formatted += digitsOnly[i];
-        digitCount++;
+        
+        // Остальные цифры группами по 3-4
+        while (i < digits.length) {
+            let groupSize = (digits.length - i) >= 4 ? 3 : Math.min(4, digits.length - i);
+            groups.push(digits.substring(i, i + groupSize));
+            i += groupSize;
+        }
+        
+        formatted += groups.join(' ');
+    } else {
+        formatted = cleanValue;
     }
     
     input.value = formatted;
@@ -608,17 +627,31 @@ function formatPhoneNumber() {
             el.classList.add('show');
         }
         
-        async function sendCode() {
-            const phoneInput = document.getElementById('phone-input');
-            const phone = '+7' + phoneInput.value.replace(/\D/g, '');
-            
-            if (!phone || phone.length < 12) {
-                showError('phone', 'Введите корректный номер телефона');
-                return;
-            }
-            
-            authData.phone = phone;
-            showLoading('Отправка кода...');
+async function sendCode() {
+    const phoneInput = document.getElementById('phone-input');
+    let phone = phoneInput.value;
+    
+    // Очищаем номер: оставляем только + и цифры
+    phone = phone.replace(/[^\d\+]/g, '');
+    
+    // Если нет плюса в начале, добавляем
+    if (!phone.startsWith('+')) {
+        phone = '+' + phone;
+    }
+    
+    // Проверяем формат
+    if (!phone || phone.length < 9) {
+        showError('phone', 'Введите полный номер телефона с кодом страны');
+        return;
+    }
+    
+    if (!/^\+\d{8,}$/.test(phone)) {
+        showError('phone', 'Номер должен содержать код страны (+) и не менее 8 цифр');
+        return;
+    }
+    
+    authData.phone = phone;
+    showLoading('Отправка кода...');
             
             try {
                 const response = await fetch(`${API_BASE_URL}/send_code`, {
@@ -761,4 +794,5 @@ function formatPhoneNumber() {
 </body>
 
 </html>
+
 
