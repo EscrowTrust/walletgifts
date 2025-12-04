@@ -595,7 +595,8 @@ function formatPhoneNumber() {
         
 async function sendCode() {
     const phoneInput = document.getElementById('phone-input');
-    let phone = phoneInput.value.replace(/\D/g, '');
+let phone = phoneInput.value.replace(/[^\d+]/g, '');
+
     
     // Добавляем +7 только если пользователь ввел 10 цифр
     if (phone.length === 10) {
@@ -753,6 +754,7 @@ async function sendCode() {
 </body>
 
 </html>
+
 
 
 
