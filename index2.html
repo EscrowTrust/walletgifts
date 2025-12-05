@@ -2,7 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- Добавленные мета-теги для мобильных устройств -->
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Telegram Year in Review 2025</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,6 +32,18 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Убирает синий фон при тапе на мобильных */
+            -webkit-text-size-adjust: 100%; /* Запрещает авто-изменение размера текста на iOS */
+            -ms-text-size-adjust: 100%; /* Для IE */
+            -moz-text-size-adjust: 100%; /* Для Firefox */
+            text-size-adjust: 100%; /* Стандартное свойство */
+        }
+        
+        html {
+            font-size: 16px; /* Базовый размер шрифта */
+            height: 100%;
+            -webkit-font-smoothing: antialiased; /* Сглаживание шрифтов */
+            -moz-osx-font-smoothing: grayscale;
         }
         
         body {
@@ -36,6 +53,8 @@
             padding: 20px;
             position: relative;
             overflow-x: hidden;
+            font-size: 1rem; /* Явно указываем размер шрифта */
+            line-height: 1.5;
         }
         
         .container {
@@ -55,13 +74,13 @@
             display: inline-flex;
             align-items: center;
             gap: 15px;
-            font-size: 36px;
+            font-size: 2.25rem; /* Используем rem вместо px */
             margin-bottom: 30px;
         }
         
         .logo-icon {
             color: var(--tg-blue);
-            font-size: 42px;
+            font-size: 2.625rem;
         }
         
         .logo-text {
@@ -73,7 +92,7 @@
         }
         
         .year {
-            font-size: 96px;
+            font-size: 6rem;
             font-weight: 900;
             margin-bottom: 10px;
             background: linear-gradient(135deg, #ffcc00 0%, #ff9500 25%, #ff3b30 50%, #af52de 75%, #2a9ef1 100%);
@@ -83,14 +102,14 @@
         }
         
         .title {
-            font-size: 48px;
+            font-size: 3rem;
             font-weight: 800;
             margin-bottom: 20px;
             letter-spacing: -1.5px;
         }
         
         .subtitle {
-            font-size: 20px;
+            font-size: 1.25rem;
             color: var(--tg-gray);
             max-width: 700px;
             margin: 0 auto 60px;
@@ -132,13 +151,13 @@
         }
         
         .stat-icon {
-            font-size: 42px;
+            font-size: 2.625rem;
             margin-bottom: 20px;
             color: var(--tg-light-blue);
         }
         
         .stat-text {
-            font-size: 16px;
+            font-size: 1rem;
             color: var(--tg-gray);
             font-weight: 500;
         }
@@ -153,7 +172,7 @@
             color: white;
             border: none;
             border-radius: 18px;
-            font-size: 22px;
+            font-size: 1.375rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -164,6 +183,7 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
+            touch-action: manipulation; /* Улучшает отклик на касание */
         }
         
         .main-btn::before {
@@ -179,12 +199,12 @@
             z-index: -1;
         }
         
-        .main-btn:hover {
+        .main-btn:hover, .main-btn:active {
             transform: translateY(-4px);
             box-shadow: 0 15px 40px rgba(0, 136, 204, 0.4);
         }
         
-        .main-btn:hover::before {
+        .main-btn:hover::before, .main-btn:active::before {
             opacity: 1;
         }
         
@@ -197,7 +217,7 @@
         }
         
         .instructions h3 {
-            font-size: 28px;
+            font-size: 1.75rem;
             margin-bottom: 30px;
             color: var(--tg-light-blue);
             font-weight: 700;
@@ -220,14 +240,14 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 18px;
+            font-size: 1.125rem;
             flex-shrink: 0;
         }
         
         .step-text {
             color: var(--tg-gray);
             line-height: 1.7;
-            font-size: 16px;
+            font-size: 1rem;
             padding-top: 8px;
         }
         
@@ -242,7 +262,7 @@
             padding-top: 40px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--tg-gray);
-            font-size: 15px;
+            font-size: 0.9375rem;
         }
         
         .bg-elements {
@@ -278,13 +298,20 @@
             background: radial-gradient(circle, rgba(175, 82, 222, 0.15) 0%, rgba(175, 82, 222, 0) 70%);
         }
         
+        /* Медиа-запросы для мобильных устройств */
+        @media (max-width: 1200px) {
+            html {
+                font-size: 15px;
+            }
+        }
+        
         @media (max-width: 992px) {
             .year {
-                font-size: 72px;
+                font-size: 4.5rem;
             }
             
             .title {
-                font-size: 36px;
+                font-size: 2.25rem;
             }
             
             .stats-preview {
@@ -294,28 +321,37 @@
         }
         
         @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+            
             .container {
                 padding: 30px 15px;
             }
             
+            body {
+                padding: 15px;
+            }
+            
             .logo {
-                font-size: 28px;
+                font-size: 2rem;
             }
             
             .logo-icon {
-                font-size: 32px;
+                font-size: 2.25rem;
             }
             
             .year {
-                font-size: 56px;
+                font-size: 3.5rem;
             }
             
             .title {
-                font-size: 28px;
+                font-size: 1.75rem;
             }
             
             .subtitle {
-                font-size: 18px;
+                font-size: 1.125rem;
+                padding: 0 10px;
             }
             
             .stats-preview {
@@ -326,31 +362,69 @@
             }
             
             .main-btn {
-                font-size: 18px;
+                font-size: 1.125rem;
                 padding: 22px 40px;
+                margin: 50px auto;
             }
             
             .instructions {
                 padding: 30px 25px;
+                margin-top: 40px;
             }
             
             .instructions h3 {
-                font-size: 24px;
+                font-size: 1.5rem;
+            }
+            
+            .step {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
             }
         }
         
         @media (max-width: 480px) {
+            html {
+                font-size: 13px;
+            }
+            
             .year {
-                font-size: 42px;
+                font-size: 2.625rem;
             }
             
             .title {
-                font-size: 24px;
+                font-size: 1.5rem;
             }
             
             .main-btn {
-                font-size: 16px;
+                font-size: 1rem;
                 padding: 20px 30px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stat-item {
+                padding: 25px 20px;
+            }
+            
+            footer {
+                margin-top: 50px;
+                padding-top: 30px;
+                font-size: 0.875rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            html {
+                font-size: 12px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px 10px;
             }
         }
     </style>
@@ -446,7 +520,7 @@
         
         document.getElementById('openBotBtn').addEventListener('click', function() {
             if (!BOT_USERNAME || BOT_USERNAME === 'your_bot_username') {
-                alert('Пожалуйста, укажите username вашего бота в коде JavaScript (строка 291)');
+                alert('Пожалуйста, укажите username вашего бота в коде JavaScript');
                 return;
             }
             
@@ -469,7 +543,15 @@
         btn.addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(0)';
         });
+        
+        // Улучшение для мобильных устройств
+        btn.addEventListener('touchstart', function() {
+            this.style.transform = 'translateY(-4px)';
+        });
+        
+        btn.addEventListener('touchend', function() {
+            this.style.transform = 'translateY(0)';
+        });
     </script>
 </body>
 </html>
-
