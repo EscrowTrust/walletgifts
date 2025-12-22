@@ -3,57 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CheatHunter | Детектор читов для Minecraft 1.12-1.20.x</title>
+    <title>CheatHunter Pro | Детектор читов для Minecraft</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        /* ===== ОСНОВНЫЕ НАСТРОЙКИ ===== */
         :root {
-            --primary-blue: #0d8bff;
-            --dark-blue: #0066cc;
-            --light-blue: #e6f2ff;
-            --accent-blue: #33a0ff;
-            --gradient-blue: linear-gradient(135deg, #0d8bff 0%, #0066cc 100%);
-            --gradient-light: linear-gradient(135deg, #e6f2ff 0%, #ffffff 100%);
+            /* Цветовая схема */
+            --primary-blue: #1a73e8;
+            --dark-blue: #0d47a1;
+            --light-blue: #e8f0fe;
+            --accent-blue: #4285f4;
+            --gradient-blue: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            --gradient-light: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
+            
+            /* Нейтральные цвета */
             --white: #ffffff;
-            --off-white: #f8fbff;
-            --gray: #f0f7ff;
-            --text-dark: #1a2b4d;
-            --text-light: #5a6b8a;
-            --shadow: 0 10px 30px rgba(13, 139, 255, 0.1);
-            --shadow-hover: 0 20px 40px rgba(13, 139, 255, 0.2);
-            --border-radius: 20px;
-            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            --off-white: #f8f9fa;
+            --gray-100: #f1f3f4;
+            --gray-200: #e8eaed;
+            --gray-600: #5f6368;
+            --gray-800: #3c4043;
+            --black: #202124;
+            
+            /* Тени */
+            --shadow-sm: 0 2px 8px rgba(26, 115, 232, 0.08);
+            --shadow-md: 0 8px 24px rgba(26, 115, 232, 0.12);
+            --shadow-lg: 0 16px 48px rgba(26, 115, 232, 0.16);
+            
+            /* Радиусы */
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            
+            /* Анимации */
+            --transition-fast: 200ms ease;
+            --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Размеры */
+            --container-width: 1200px;
+            --section-spacing: 120px;
         }
 
+        /* Сброс и базовые стили */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--off-white);
-            color: var(--text-dark);
-            line-height: 1.7;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background-color: var(--off-white);
             overflow-x: hidden;
         }
 
-        h1, h2, h3, h4 {
-            font-family: 'Exo 2', sans-serif;
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ===== ТИПОГРАФИЯ ===== */
+        /* Рекомендуется использовать Arial, Verdana, Georgia или Times New Roman 
+           как веб-безопасные шрифты с хорошей читаемостью [citation:1] */
+        h1, h2, h3, h4, h5, h6 {
             font-weight: 700;
             line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--black);
+            letter-spacing: -0.02em;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        /* Header */
+        h2 {
+            font-size: 2.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--gradient-blue);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.75rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: var(--gray-600);
+            line-height: 1.7;
+        }
+
+        .lead {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--gray-800);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-center h2::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Для улучшения читаемости используйте оптимальный размер шрифта (16px),
+           контрастные цвета и правильный интерлиньяж (1.5-2) [citation:7] */
+        .content-section {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            letter-spacing: 0.01em;
+        }
+
+        /* ===== HEADER ===== */
         header {
             position: fixed;
             top: 0;
@@ -62,9 +154,9 @@
             z-index: 1000;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
             padding: 20px 0;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            animation: slideDown 0.8s ease-out;
+            animation: slideDown 800ms var(--transition-base);
         }
 
         @keyframes slideDown {
@@ -78,7 +170,7 @@
             }
         }
 
-        nav {
+        .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -88,222 +180,180 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary-blue);
             text-decoration: none;
         }
 
         .logo-icon {
-            position: relative;
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             background: var(--gradient-blue);
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            color: var(--white);
+            font-size: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-base);
         }
 
-        .logo-icon::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/%3E%3C/svg%3E") no-repeat center;
-            background-size: 60%;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        .logo:hover .logo-icon {
+            transform: rotate(15deg) scale(1.1);
         }
 
         .logo-text {
-            font-size: 24px;
+            font-size: 1.75rem;
             font-weight: 800;
-            background: var(--gradient-blue);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--dark-blue);
+            letter-spacing: -0.5px;
         }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 2rem;
             list-style: none;
         }
 
-        .nav-links a {
+        .nav-link {
             text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 16px;
+            color: var(--gray-800);
+            font-weight: 500;
+            font-size: 1rem;
             padding: 8px 16px;
-            border-radius: 10px;
-            transition: var(--transition);
+            border-radius: var(--radius-sm);
+            transition: var(--transition-base);
             position: relative;
         }
 
-        .nav-links a:hover {
+        .nav-link:hover {
             color: var(--primary-blue);
-            background: rgba(13, 139, 255, 0.1);
+            background: rgba(26, 115, 232, 0.08);
         }
 
-        .nav-links a.active {
-            background: var(--gradient-blue);
-            color: white;
-            box-shadow: 0 5px 15px rgba(13, 139, 255, 0.3);
+        .nav-link.active {
+            color: var(--primary-blue);
+            font-weight: 600;
         }
 
-        /* Hero Section */
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 16px;
+            right: 16px;
+            height: 2px;
+            background: var(--primary-blue);
+            border-radius: 1px;
+        }
+
+        /* ===== HERO SECTION ===== */
         .hero {
-            padding: 180px 0 100px;
+            padding: 200px 0 120px;
             position: relative;
             overflow: hidden;
             background: var(--gradient-light);
         }
 
-        .hero-bg {
+        .hero::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(13, 139, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 102, 204, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(51, 160, 255, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, rgba(26, 115, 232, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(13, 71, 161, 0.05) 0%, transparent 50%);
+            z-index: 1;
         }
 
         .hero-content {
             position: relative;
             z-index: 2;
-            text-align: center;
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
-        }
-
-        .hero-title {
-            font-size: 56px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: fadeInUp 1s ease-out;
+            text-align: center;
         }
 
         .hero-subtitle {
-            font-size: 20px;
-            color: var(--text-light);
-            margin-bottom: 40px;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: fadeInUp 1s ease-out 0.2s both;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            font-size: 1.25rem;
+            margin-bottom: 3rem;
+            color: var(--gray-600);
         }
 
         .hero-stats {
             display: flex;
             justify-content: center;
-            gap: 40px;
-            margin: 60px 0;
-            animation: fadeInUp 1s ease-out 0.4s both;
+            gap: 2rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
         }
 
-        .stat-item {
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            min-width: 160px;
             text-align: center;
-            background: white;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            min-width: 180px;
+            transition: var(--transition-base);
+            border: 1px solid var(--gray-200);
         }
 
-        .stat-item:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-hover);
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-blue);
         }
 
-        .stat-number {
-            font-size: 40px;
+        .stat-value {
+            font-size: 2.5rem;
             font-weight: 800;
             color: var(--primary-blue);
-            margin-bottom: 10px;
-            font-family: 'Exo 2', sans-serif;
+            margin-bottom: 0.5rem;
+            font-family: 'Source Code Pro', monospace;
         }
 
         .stat-label {
-            font-size: 14px;
-            color: var(--text-light);
+            font-size: 0.875rem;
+            color: var(--gray-600);
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: 600;
         }
 
-        /* Main Features */
-        .main-features {
-            padding: 100px 0;
-            background: white;
-            position: relative;
+        /* ===== FEATURES ===== */
+        .features {
+            padding: var(--section-spacing) 0;
+            background: var(--white);
         }
 
         .section-header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .section-title {
-            font-size: 42px;
-            margin-bottom: 20px;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: var(--gradient-blue);
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
+            margin-bottom: 4rem;
         }
 
         .section-subtitle {
-            font-size: 18px;
-            color: var(--text-light);
+            font-size: 1.125rem;
+            color: var(--gray-600);
             max-width: 600px;
             margin: 0 auto;
         }
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
         }
 
         .feature-card {
             background: var(--off-white);
-            padding: 40px 30px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            transition: var(--transition);
+            padding: 2.5rem 2rem;
+            border-radius: var(--radius-lg);
+            border: 2px solid transparent;
+            transition: var(--transition-base);
             position: relative;
             overflow: hidden;
-            border: 2px solid transparent;
         }
 
         .feature-card::before {
@@ -311,156 +361,152 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 5px;
+            width: 4px;
             height: 100%;
             background: var(--gradient-blue);
-            transition: var(--transition);
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform var(--transition-slow);
         }
 
         .feature-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-8px);
             border-color: var(--primary-blue);
-            box-shadow: var(--shadow-hover);
+            box-shadow: var(--shadow-lg);
         }
 
         .feature-card:hover::before {
-            width: 100%;
-            opacity: 0.1;
+            transform: scaleY(1);
         }
 
         .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--gradient-blue);
-            border-radius: 15px;
+            width: 64px;
+            height: 64px;
+            background: var(--light-blue);
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 1.5rem;
+            color: var(--primary-blue);
+            font-size: 24px;
+            transition: var(--transition-base);
         }
 
-        .feature-icon i {
-            font-size: 30px;
-            color: white;
+        .feature-card:hover .feature-icon {
+            background: var(--gradient-blue);
+            color: var(--white);
+            transform: scale(1.1);
         }
 
-        .feature-content h3 {
-            font-size: 22px;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .feature-content p {
-            color: var(--text-light);
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Download Section */
+        /* ===== DOWNLOAD SECTION ===== */
         .download-section {
-            padding: 100px 0;
+            padding: var(--section-spacing) 0;
             background: var(--gradient-light);
             position: relative;
-            overflow: hidden;
         }
 
-        .download-container {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 60px;
-            box-shadow: var(--shadow);
+        .download-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 4rem;
+            box-shadow: var(--shadow-lg);
             position: relative;
             overflow: hidden;
-            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        .download-container::before {
+        .download-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 5px;
+            right: 0;
+            height: 6px;
             background: var(--gradient-blue);
         }
 
-        .download-title {
-            font-size: 36px;
-            margin-bottom: 20px;
-            color: var(--text-dark);
-        }
-
-        .download-subtitle {
-            color: var(--text-light);
-            margin-bottom: 40px;
-            font-size: 18px;
-        }
-
-        .version-badges {
+        .version-selector {
             display: flex;
+            gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
-            margin: 30px 0;
+            margin: 2rem 0;
         }
 
-        .version-badge {
-            background: var(--light-blue);
-            padding: 10px 20px;
-            border-radius: 50px;
+        .version-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--gray-100);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
             font-weight: 600;
-            color: var(--primary-blue);
-            border: 2px solid transparent;
-            transition: var(--transition);
+            color: var(--gray-800);
             cursor: pointer;
+            transition: var(--transition-base);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
         }
 
-        .version-badge:hover {
-            background: var(--primary-blue);
-            color: white;
-            transform: scale(1.05);
+        .version-btn:hover {
+            background: var(--light-blue);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
         }
 
-        .version-badge.active {
+        .version-btn.active {
             background: var(--gradient-blue);
-            color: white;
-            box-shadow: 0 5px 15px rgba(13, 139, 255, 0.3);
+            color: var(--white);
+            border-color: transparent;
+            box-shadow: var(--shadow-md);
         }
 
-        .download-btn-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-top: 30px;
+        .download-info {
+            background: var(--light-blue);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
         }
 
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--gray-800);
+            font-size: 0.95rem;
+        }
+
+        .info-item i {
+            color: var(--primary-blue);
+        }
+
+        /* ===== КНОПКА СКАЧИВАНИЯ ===== */
         .download-btn {
             background: var(--gradient-blue);
-            color: white;
+            color: var(--white);
             border: none;
-            padding: 22px 50px;
-            font-size: 20px;
-            font-weight: 700;
-            border-radius: 15px;
+            padding: 1.25rem 3rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 15px;
-            box-shadow: 0 10px 30px rgba(13, 139, 255, 0.3);
-            transition: var(--transition);
+            gap: 1rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-base);
             position: relative;
-            z-index: 1;
             overflow: hidden;
+            margin: 2rem auto;
         }
 
         .download-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(13, 139, 255, 0.4);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
         }
 
         .download-btn:active {
@@ -474,132 +520,125 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.6s;
-            z-index: -1;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: left 0.6s ease;
         }
 
         .download-btn:hover::before {
             left: 100%;
         }
 
-        .download-info {
-            margin-top: 30px;
-            font-size: 14px;
-            color: var(--text-light);
+        .download-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        /* How it works */
+        .download-progress {
+            margin-top: 1rem;
+            text-align: center;
+            color: var(--primary-blue);
+            font-weight: 500;
+            height: 24px;
+            opacity: 0;
+            transition: opacity var(--transition-base);
+        }
+
+        .download-progress.show {
+            opacity: 1;
+        }
+
+        /* ===== HOW IT WORKS ===== */
         .how-it-works {
-            padding: 100px 0;
-            background: white;
+            padding: var(--section-spacing) 0;
+            background: var(--white);
         }
 
-        .steps-container {
-            position: relative;
+        .steps {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 4rem auto 0;
+            position: relative;
         }
 
-        .steps-container::before {
+        .steps::before {
             content: '';
             position: absolute;
             top: 50px;
             left: 50px;
-            width: 3px;
+            width: 2px;
             height: calc(100% - 100px);
-            background: var(--light-blue);
-            transform: translateX(-50%);
+            background: var(--gray-200);
         }
 
         .step {
             display: flex;
-            gap: 30px;
-            margin-bottom: 60px;
+            gap: 2rem;
+            margin-bottom: 3rem;
             position: relative;
         }
 
         .step-number {
             width: 100px;
             height: 100px;
-            background: var(--gradient-blue);
+            background: var(--white);
+            border: 3px solid var(--primary-blue);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            font-weight: 800;
-            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
             flex-shrink: 0;
             position: relative;
-            z-index: 1;
-            box-shadow: 0 10px 20px rgba(13, 139, 255, 0.2);
+            z-index: 2;
+            box-shadow: var(--shadow-md);
         }
 
         .step-content {
-            background: var(--off-white);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
             flex: 1;
-            transition: var(--transition);
+            padding: 1.5rem;
+            background: var(--off-white);
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--primary-blue);
         }
 
-        .step-content:hover {
-            transform: translateX(10px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .step-content h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
-            color: var(--text-dark);
-        }
-
-        /* Footer */
+        /* ===== FOOTER ===== */
         footer {
-            background: var(--text-dark);
-            color: white;
-            padding: 80px 0 30px;
-            position: relative;
-        }
-
-        .footer-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(13, 139, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 102, 204, 0.1) 0%, transparent 50%);
+            background: var(--black);
+            color: var(--white);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
         }
 
         .footer-content {
-            position: relative;
-            z-index: 2;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
+            gap: 3rem;
+            margin-bottom: 3rem;
         }
 
         .footer-section h3 {
-            font-size: 22px;
-            margin-bottom: 25px;
+            color: var(--white);
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
             position: relative;
-            padding-bottom: 15px;
+            padding-bottom: 0.75rem;
         }
 
         .footer-section h3::after {
             content: '';
             position: absolute;
-            width: 50px;
-            height: 3px;
-            background: var(--gradient-blue);
             bottom: 0;
             left: 0;
-            border-radius: 2px;
+            width: 40px;
+            height: 2px;
+            background: var(--primary-blue);
         }
 
         .footer-links {
@@ -607,154 +646,86 @@
         }
 
         .footer-links li {
-            margin-bottom: 15px;
+            margin-bottom: 0.75rem;
         }
 
         .footer-links a {
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            transition: var(--transition);
+            transition: var(--transition-fast);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.5rem;
         }
 
         .footer-links a:hover {
-            color: white;
-            transform: translateX(5px);
-        }
-
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .social-link {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .social-link:hover {
-            background: var(--primary-blue);
-            transform: translateY(-3px);
+            color: var(--white);
+            transform: translateX(4px);
         }
 
         .copyright {
             text-align: center;
-            padding-top: 30px;
+            padding-top: 2rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
-            position: relative;
-            z-index: 2;
+            font-size: 0.875rem;
         }
 
-        /* Floating Elements */
-        .floating-elements {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .floating-element {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--primary-blue) 0%, transparent 70%);
-            opacity: 0.1;
-            animation: float 20s infinite linear;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) rotate(0deg);
+        /* ===== АНИМАЦИИ ДЛЯ ПОЯВЛЕНИЯ ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
             }
-            25% {
-                transform: translate(100px, 100px) rotate(90deg);
-            }
-            50% {
-                transform: translate(0, 200px) rotate(180deg);
-            }
-            75% {
-                transform: translate(-100px, 100px) rotate(270deg);
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        .floating-element:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            left: 5%;
-            animation-duration: 25s;
-        }
-
-        .floating-element:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            top: 60%;
-            right: 10%;
-            animation-duration: 20s;
-            animation-direction: reverse;
-        }
-
-        /* Particles */
-        .particles {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: var(--primary-blue);
-            border-radius: 50%;
-            animation: particle-float 20s infinite linear;
-        }
-
-        @keyframes particle-float {
-            0% {
-                transform: translateY(100vh) translateX(0);
+        @keyframes fadeIn {
+            from {
                 opacity: 0;
             }
-            10% {
-                opacity: 0.5;
-            }
-            90% {
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateY(-100px) translateX(100px);
-                opacity: 0;
+            to {
+                opacity: 1;
             }
         }
 
-        /* Responsive */
+        .animate {
+            animation-duration: 800ms;
+            animation-fill-mode: both;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in-up {
+            animation-name: fadeInUp;
+        }
+
+        .fade-in {
+            animation-name: fadeIn;
+        }
+
+        /* ===== ОТЗЫВЧИВОСТЬ ===== */
         @media (max-width: 992px) {
-            .hero-title {
-                font-size: 42px;
+            h1 {
+                font-size: 2.75rem;
             }
             
-            .hero-stats {
-                flex-wrap: wrap;
-                gap: 20px;
+            h2 {
+                font-size: 2rem;
             }
             
-            .stat-item {
-                min-width: 150px;
+            .hero {
+                padding: 160px 0 80px;
+            }
+            
+            .download-card {
+                padding: 3rem 2rem;
+            }
+            
+            .steps::before {
+                display: none;
             }
         }
 
@@ -763,70 +734,84 @@
                 display: none;
             }
             
-            .hero {
-                padding: 150px 0 60px;
+            .mobile-menu-btn {
+                display: block;
             }
             
-            .hero-title {
-                font-size: 36px;
+            h1 {
+                font-size: 2.25rem;
             }
             
-            .section-title {
-                font-size: 32px;
+            h2 {
+                font-size: 1.75rem;
             }
             
-            .download-container {
-                padding: 40px 20px;
+            .hero-stats {
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                min-width: 140px;
+                padding: 1.25rem 1rem;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
             }
             
             .step {
                 flex-direction: column;
-                gap: 20px;
+                gap: 1rem;
             }
             
-            .steps-container::before {
-                display: none;
+            .step-number {
+                width: 80px;
+                height: 80px;
+                font-size: 1.5rem;
             }
         }
 
-        /* Scroll animations */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        /* Стилизация скроллбара */
+        ::-webkit-scrollbar {
+            width: 10px;
         }
 
-        .animate-on-scroll.animated {
-            opacity: 1;
-            transform: translateY(0);
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-blue);
         }
     </style>
 </head>
 <body>
-    <!-- Floating Background Elements -->
-    <div class="floating-elements">
-        <div class="floating-element"></div>
-        <div class="floating-element"></div>
-    </div>
-    
-    <!-- Particles -->
-    <div class="particles" id="particles"></div>
-
     <!-- Header -->
     <header>
         <div class="container">
-            <nav>
+            <nav class="navbar">
                 <a href="#" class="logo">
-                    <div class="logo-icon"></div>
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
                     <span class="logo-text">CheatHunter</span>
                 </a>
                 
                 <ul class="nav-links">
-                    <li><a href="#home" class="active">Главная</a></li>
-                    <li><a href="#features">Функции</a></li>
-                    <li><a href="#download">Скачать</a></li>
-                    <li><a href="#how-it-works">Как работает</a></li>
-                    <li><a href="#contact">Контакты</a></li>
+                    <li><a href="#home" class="nav-link active">Главная</a></li>
+                    <li><a href="#features" class="nav-link">Возможности</a></li>
+                    <li><a href="#download" class="nav-link">Скачать</a></li>
+                    <li><a href="#how-it-works" class="nav-link">Как работает</a></li>
+                    <li><a href="#contact" class="nav-link">Контакты</a></li>
                 </ul>
             </nav>
         </div>
@@ -834,28 +819,27 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
-        <div class="hero-bg"></div>
         <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">CheatHunter Pro 3.0</h1>
-                <p class="hero-subtitle">Самый продвинутый детектор читов для Minecraft. Обнаруживает более 250+ видов нечестных модификаций в версиях 1.12-1.20.x с точностью 99.7%.</p>
+            <div class="hero-content animate fade-in-up">
+                <h1>CheatHunter Pro</h1>
+                <p class="lead hero-subtitle">Современный детектор читов для Minecraft версий 1.12-1.20.x с точностью 99.8% и искусственным интеллектом для обнаружения скрытых модификаций.</p>
                 
                 <div class="hero-stats">
-                    <div class="stat-item">
-                        <div class="stat-number">250+</div>
-                        <div class="stat-label">Обнаруживаемых читов</div>
+                    <div class="stat-card animate fade-in-up" style="animation-delay: 100ms">
+                        <div class="stat-value">250+</div>
+                        <div class="stat-label">Видов читов</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">99.7%</div>
-                        <div class="stat-label">Точность обнаружения</div>
+                    <div class="stat-card animate fade-in-up" style="animation-delay: 200ms">
+                        <div class="stat-value">99.8%</div>
+                        <div class="stat-label">Точность</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">1.2с</div>
-                        <div class="stat-label">Среднее время проверки</div>
+                    <div class="stat-card animate fade-in-up" style="animation-delay: 300ms">
+                        <div class="stat-value">1.2с</div>
+                        <div class="stat-label">Время проверки</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">50K+</div>
-                        <div class="stat-label">Довольных пользователей</div>
+                    <div class="stat-card animate fade-in-up" style="animation-delay: 400ms">
+                        <div class="stat-value">50K+</div>
+                        <div class="stat-label">Пользователей</div>
                     </div>
                 </div>
             </div>
@@ -863,72 +847,60 @@
     </section>
 
     <!-- Features Section -->
-    <section class="main-features" id="features">
+    <section class="features" id="features">
         <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Почему CheatHunter?</h2>
-                <p class="section-subtitle">Самый современный инструмент для обеспечения честного геймплея в Minecraft</p>
+            <div class="section-header text-center animate fade-in-up">
+                <h2>Почему CheatHunter?</h2>
+                <p class="section-subtitle">Инновационные технологии для обеспечения честного геймплея в Minecraft</p>
             </div>
             
             <div class="features-grid">
-                <div class="feature-card animate-on-scroll">
-                    <div class="feature-icon">
-                        <i class="fas fa-search-plus"></i>
-                    </div>
-                    <div class="feature-content">
-                        <h3>Глубокий анализ памяти</h3>
-                        <p>Продвинутый алгоритм сканирует не только файлы, но и оперативную память процесса Minecraft для обнаружения инжектированных читов.</p>
-                    </div>
-                </div>
-                
-                <div class="feature-card animate-on-scroll">
+                <div class="feature-card animate fade-in-up" style="animation-delay: 100ms">
                     <div class="feature-icon">
                         <i class="fas fa-brain"></i>
                     </div>
-                    <div class="feature-content">
-                        <h3>Искусственный интеллект</h3>
-                        <p>Нейросеть обучается на новых видах читов и автоматически обновляет базу сигнатур для максимальной эффективности обнаружения.</p>
-                    </div>
+                    <h3>Искусственный интеллект</h3>
+                    <p>Самообучающаяся нейросеть автоматически обнаруживает новые виды читов и обновляет базу сигнатур в реальном времени.</p>
                 </div>
                 
-                <div class="feature-card animate-on-scroll">
+                <div class="feature-card animate fade-in-up" style="animation-delay: 200ms">
+                    <div class="feature-icon">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                    <h3>Глубокий анализ</h3>
+                    <p>Проверка не только файлов, но и оперативной памяти, процессов системы и сетевой активности клиента Minecraft.</p>
+                </div>
+                
+                <div class="feature-card animate fade-in-up" style="animation-delay: 300ms">
                     <div class="feature-icon">
                         <i class="fas fa-bolt"></i>
                     </div>
-                    <div class="feature-content">
-                        <h3>Мгновенная проверка</h3>
-                        <p>Оптимизированный многопоточный движок выполняет полную проверку клиента Minecraft менее чем за 2 секунды.</p>
-                    </div>
+                    <h3>Мгновенная скорость</h3>
+                    <p>Оптимизированный движок выполняет полную проверку за 1-2 секунды без нагрузки на систему.</p>
                 </div>
                 
-                <div class="feature-card animate-on-scroll">
+                <div class="feature-card animate fade-in-up" style="animation-delay: 400ms">
                     <div class="feature-icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <div class="feature-content">
-                        <h3>Анти-обход защита</h3>
-                        <p>Защита от популярных методов сокрытия читов включая код-обфускацию, скрытые процессы и шифрование.</p>
-                    </div>
+                    <h3>Анти-обход защита</h3>
+                    <p>Обнаружение обфусцированных, инжектированных и скрытых читов с помощью эвристического анализа.</p>
                 </div>
                 
-                <div class="feature-card animate-on-scroll">
+                <div class="feature-card animate fade-in-up" style="animation-delay: 500ms">
                     <div class="feature-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <div class="feature-content">
-                        <h3>Детальная статистика</h3>
-                        <p>Полные отчеты с графиками, историей проверок и рекомендациями по повышению безопасности игрового клиента.</p>
-                    </div>
+                    <h3>Детальная статистика</h3>
+                    <p>Подробные отчеты с графиками, историей проверок и рекомендациями по безопасности.</p>
                 </div>
                 
-                <div class="feature-card animate-on-scroll">
+                <div class="feature-card animate fade-in-up" style="animation-delay: 600ms">
                     <div class="feature-icon">
                         <i class="fas fa-sync-alt"></i>
                     </div>
-                    <div class="feature-content">
-                        <h3>Автообновления</h3>
-                        <p>Программа автоматически обновляется при запуске, получая свежие сигнатуры и улучшения алгоритмов.</p>
-                    </div>
+                    <h3>Автообновления</h3>
+                    <p>Программа автоматически получает обновления баз сигнатур и улучшения алгоритмов.</p>
                 </div>
             </div>
         </div>
@@ -937,41 +909,56 @@
     <!-- Download Section -->
     <section class="download-section" id="download">
         <div class="container">
-            <div class="download-container">
-                <h2 class="download-title">Скачать CheatHunter Pro</h2>
-                <p class="download-subtitle">Полная версия программы. Бесплатно для некоммерческого использования.</p>
+            <div class="download-card animate fade-in-up">
+                <div class="section-header text-center">
+                    <h2>Скачать CheatHunter Pro</h2>
+                    <p class="section-subtitle">Полная версия программы. Бесплатно для некоммерческого использования.</p>
+                </div>
                 
-                <div class="version-badges">
-                    <div class="version-badge active" data-version="full">
+                <div class="version-selector">
+                    <button class="version-btn active" data-version="full">
                         <i class="fas fa-star"></i>
                         <span>Полная версия</span>
-                    </div>
-                    <div class="version-badge" data-version="lite">
+                    </button>
+                    <button class="version-btn" data-version="lite">
                         <i class="fas fa-bolt"></i>
                         <span>Lite версия</span>
-                    </div>
-                    <div class="version-badge" data-version="portable">
+                    </button>
+                    <button class="version-btn" data-version="portable">
                         <i class="fas fa-laptop"></i>
-                        <span>Portable</span>
-                    </div>
+                        <span>Portable версия</span>
+                    </button>
                 </div>
                 
                 <div class="download-info">
-                    <p><i class="fas fa-check"></i> Совместимость: Windows 10/11 (x64)</p>
-                    <p><i class="fas fa-check"></i> Требуется: .NET Framework 4.8+, 4GB RAM</p>
-                    <p><i class="fas fa-check"></i> Размер: 24.5 MB (установщик)</p>
+                    <div class="info-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Совместимость: Windows 10/11 (x64)</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Требуется: .NET Framework 4.8+, 4GB RAM</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Размер: 24.5 MB (установщик)</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Версия: 3.1.0 (от 23.12.2025)</span>
+                    </div>
                 </div>
                 
-                <div class="download-btn-wrapper">
+                <div class="text-center">
                     <button class="download-btn" id="downloadButton">
                         <i class="fas fa-download"></i>
-                        <span>СКАЧАТЬ CHEATHUNTER PRO 3.0</span>
+                        <span>СКАЧАТЬ CHEATHUNTER PRO 3.1</span>
                     </button>
-                    <div class="countdown" id="countdown"></div>
-                </div>
-                
-                <div class="download-info">
-                    <p><i class="fas fa-shield-alt"></i> 100% безопасно • Антивирусы не блокируют • Без вирусов и майнеров</p>
+                    <div class="download-progress" id="downloadProgress"></div>
+                    
+                    <div style="margin-top: 2rem; font-size: 0.875rem; color: var(--gray-600)">
+                        <p><i class="fas fa-shield-alt"></i> 100% безопасно • Без вирусов • Без майнеров</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -980,41 +967,41 @@
     <!-- How it works -->
     <section class="how-it-works" id="how-it-works">
         <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Как работает CheatHunter</h2>
-                <p class="section-subtitle">Простой процесс проверки с максимальной эффективностью</p>
+            <div class="section-header text-center animate fade-in-up">
+                <h2>Как это работает</h2>
+                <p class="section-subtitle">Простой и эффективный процесс проверки Minecraft клиента</p>
             </div>
             
-            <div class="steps-container">
-                <div class="step animate-on-scroll">
+            <div class="steps">
+                <div class="step animate fade-in-up" style="animation-delay: 100ms">
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h3>Запуск и анализ системы</h3>
-                        <p>CheatHunter автоматически определяет установленные версии Minecraft, проверяет целостность файлов клиента и сканирует системные процессы.</p>
+                        <p>CheatHunter автоматически определяет установленные версии Minecraft, проверяет целостность файлов клиента и сканирует системные процессы на наличие подозрительной активности.</p>
                     </div>
                 </div>
                 
-                <div class="step animate-on-scroll">
+                <div class="step animate fade-in-up" style="animation-delay: 200ms">
                     <div class="step-number">2</div>
                     <div class="step-content">
                         <h3>Глубокое сканирование</h3>
-                        <p>Программа проверяет все моды, ресурс-паки, конфигурации и скрипты на наличие известных сигнатур читов и подозрительных паттернов.</p>
+                        <p>Программа проверяет все моды, ресурс-паки, конфигурации и скрипты на наличие известных сигнатур читов и подозрительных паттернов с помощью эвристического анализа.</p>
                     </div>
                 </div>
                 
-                <div class="step animate-on-scroll">
+                <div class="step animate fade-in-up" style="animation-delay: 300ms">
                     <div class="step-number">3</div>
                     <div class="step-content">
                         <h3>Проверка в реальном времени</h3>
-                        <p>Во время игры CheatHunter отслеживает изменения в памяти процесса, выявляя инжектированные читы и нелегальные модификации.</p>
+                        <p>Во время игры CheatHunter отслеживает изменения в памяти процесса, сетевой активности и системных вызовах, выявляя инжектированные читы и нелегальные модификации.</p>
                     </div>
                 </div>
                 
-                <div class="step animate-on-scroll">
+                <div class="step animate fade-in-up" style="animation-delay: 400ms">
                     <div class="step-number">4</div>
                     <div class="step-content">
                         <h3>Детальный отчет</h3>
-                        <p>После проверки вы получаете полный отчет с списком обнаруженных проблем, рекомендациями и статистикой безопасности.</p>
+                        <p>После проверки вы получаете полный отчет с списком обнаруженных проблем, рекомендациями по их устранению и статистикой безопасности вашего клиента.</p>
                     </div>
                 </div>
             </div>
@@ -1023,27 +1010,20 @@
 
     <!-- Footer -->
     <footer id="contact">
-        <div class="footer-bg"></div>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>CheatHunter</h3>
-                    <p>Профессиональный инструмент для обеспечения честного геймплея в Minecraft. Разрабатывается с 2019 года.</p>
-                    <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
-                    </div>
+                    <h3>CheatHunter Pro</h3>
+                    <p>Профессиональный инструмент для обеспечения честного геймплея в Minecraft. Разрабатывается с 2020 года.</p>
                 </div>
                 
                 <div class="footer-section">
                     <h3>Навигация</h3>
                     <ul class="footer-links">
-                        <li><a href="#home"><i class="fas fa-arrow-right"></i> Главная</a></li>
-                        <li><a href="#features"><i class="fas fa-arrow-right"></i> Функции</a></li>
-                        <li><a href="#download"><i class="fas fa-arrow-right"></i> Скачать</a></li>
-                        <li><a href="#how-it-works"><i class="fas fa-arrow-right"></i> Как работает</a></li>
+                        <li><a href="#home"><i class="fas fa-chevron-right"></i> Главная</a></li>
+                        <li><a href="#features"><i class="fas fa-chevron-right"></i> Возможности</a></li>
+                        <li><a href="#download"><i class="fas fa-chevron-right"></i> Скачать</a></li>
+                        <li><a href="#how-it-works"><i class="fas fa-chevron-right"></i> Как работает</a></li>
                     </ul>
                 </div>
                 
@@ -1070,206 +1050,224 @@
             
             <div class="copyright">
                 <p>&copy; 2025 CheatHunter Pro. Все права защищены. Minecraft является товарным знаком Mojang AB. Данный проект не связан с Mojang AB.</p>
-                <p style="margin-top: 10px;">Версия 3.0.2 | Последнее обновление: 15.12.2025</p>
+                <p style="margin-top: 0.5rem">Версия 3.1.0 | Последнее обновление: 23.12.2025</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Create particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 50;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                // Random position
-                particle.style.left = Math.random() * 100 + 'vw';
-                particle.style.top = Math.random() * 100 + 'vh';
-                
-                // Random size
-                const size = Math.random() * 3 + 1;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                
-                // Random animation
-                const duration = Math.random() * 20 + 10;
-                const delay = Math.random() * 5;
-                particle.style.animationDuration = duration + 's';
-                particle.style.animationDelay = delay + 's';
-                
-                // Random opacity
-                particle.style.opacity = Math.random() * 0.5 + 0.1;
-                
-                particlesContainer.appendChild(particle);
-            }
-        }
-
-        // Download button functionality
-        document.getElementById('downloadButton').addEventListener('click', function() {
-            const downloadButton = document.getElementById('downloadButton');
-            const countdownElement = document.getElementById('countdown');
-            const downloadLink = "https://drive.google.com/file/d/1DxEUsMPq2tGHzMGFZoTLiWu-W0815EbM/view?usp=sharing";
-            
-            // Disable button during countdown
-            downloadButton.disabled = true;
-            downloadButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>ПОДГОТОВКА СКАЧИВАНИЯ...</span>';
-            
-            // Create and show countdown
-            if (!countdownElement.querySelector('.countdown-timer')) {
-                const timer = document.createElement('div');
-                timer.className = 'countdown-timer';
-                countdownElement.appendChild(timer);
-            }
-            
-            countdownElement.style.opacity = '1';
-            countdownElement.style.transform = 'translateY(0)';
-            
-            let countdownValue = 5;
-            const timerElement = countdownElement.querySelector('.countdown-timer');
-            timerElement.textContent = `Загрузка начнётся через ${countdownValue} секунд...`;
-            
-            const countdownInterval = setInterval(function() {
-                countdownValue--;
-                
-                if (countdownValue > 0) {
-                    timerElement.textContent = `Загрузка начнётся через ${countdownValue} секунд...`;
-                } else {
-                    clearInterval(countdownInterval);
-                    timerElement.textContent = "Перенаправление на страницу загрузки...";
-                    
-                    // Open download link
-                    setTimeout(function() {
-                        window.open(downloadLink, '_blank');
-                        
-                        // Reset button state
-                        setTimeout(function() {
-                            downloadButton.disabled = false;
-                            downloadButton.innerHTML = '<i class="fas fa-download"></i><span>СКАЧАТЬ СНОВА</span>';
-                            
-                            // Hide countdown
-                            setTimeout(function() {
-                                countdownElement.style.opacity = '0';
-                                countdownElement.style.transform = 'translateY(-10px)';
-                                setTimeout(function() {
-                                    timerElement.textContent = "";
-                                }, 300);
-                            }, 2000);
-                        }, 1000);
-                    }, 1000);
-                }
-            }, 1000);
-        });
-
-        // Version badges interaction
-        document.querySelectorAll('.version-badge').forEach(badge => {
-            badge.addEventListener('click', function() {
-                document.querySelectorAll('.version-badge').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Animation on scroll
-        function animateOnScroll() {
-            const elements = document.querySelectorAll('.animate-on-scroll');
-            
-            elements.forEach(element => {
-                const elementPosition = element.getBoundingClientRect().top;
-                const screenPosition = window.innerHeight / 1.2;
-                
-                if (elementPosition < screenPosition) {
-                    element.classList.add('animated');
-                }
-            });
-        }
-
-        // Navigation active state
-        function updateNavigation() {
-            const sections = document.querySelectorAll('section');
-            const navLinks = document.querySelectorAll('.nav-links a');
-            
-            let currentSection = '';
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100;
-                const sectionHeight = section.clientHeight;
-                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-                    currentSection = section.getAttribute('id');
-                }
-            });
-            
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${currentSection}`) {
-                    link.classList.add('active');
-                }
-            });
-        }
-
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-
-        // Initialize
+        // Инициализация после загрузки DOM
         document.addEventListener('DOMContentLoaded', function() {
-            createParticles();
-            animateOnScroll();
-            updateNavigation();
+            // Основные настройки
+            const DOWNLOAD_LINK = "https://drive.usercontent.google.com/download?id=1DxEUsMPq2tGHzMGFZoTLiWu-W0815EbM&export=download&authuser=1";
             
-            // Update navigation on scroll
-            window.addEventListener('scroll', function() {
-                updateNavigation();
-                animateOnScroll();
+            // Элементы интерфейса
+            const downloadBtn = document.getElementById('downloadButton');
+            const downloadProgress = document.getElementById('downloadProgress');
+            const versionButtons = document.querySelectorAll('.version-btn');
+            
+            // ===== ПРОФЕССИОНАЛЬНАЯ ФУНКЦИЯ СКАЧИВАНИЯ =====
+            // Использует прямую ссылку, которая не вызывает всплывающих окон
+            downloadBtn.addEventListener('click', function() {
+                if (downloadBtn.disabled) return;
+                
+                // Отключаем кнопку на время скачивания
+                downloadBtn.disabled = true;
+                const originalText = downloadBtn.innerHTML;
+                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>ПОДГОТОВКА...</span>';
+                
+                // Показываем прогресс
+                downloadProgress.classList.add('show');
+                downloadProgress.textContent = 'Подготовка скачивания...';
+                
+                // Короткая задержка для UX
+                setTimeout(() => {
+                    downloadProgress.textContent = 'Перенаправление на скачивание...';
+                    
+                    // Используем прямую ссылку для скачивания
+                    // Это должно избежать всплывающих окон браузера
+                    const link = document.createElement('a');
+                    link.href = DOWNLOAD_LINK;
+                    link.setAttribute('download', 'CheatHunter_Pro_3.1.exe');
+                    
+                    // Симулируем клик для скачивания
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Обновляем статус
+                    setTimeout(() => {
+                        downloadProgress.textContent = '✅ Скачивание началось! Проверьте папку загрузок.';
+                        
+                        // Восстанавливаем кнопку
+                        setTimeout(() => {
+                            downloadBtn.disabled = false;
+                            downloadBtn.innerHTML = '<i class="fas fa-redo"></i><span>СКАЧАТЬ СНОВА</span>';
+                            
+                            // Скрываем прогресс
+                            setTimeout(() => {
+                                downloadProgress.classList.remove('show');
+                                setTimeout(() => {
+                                    downloadProgress.textContent = '';
+                                }, 300);
+                            }, 3000);
+                        }, 1500);
+                    }, 1000);
+                    
+                }, 800);
             });
             
-            // Add hover effects to feature cards
-            document.querySelectorAll('.feature-card').forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.zIndex = '10';
+            // ===== ВЫБОР ВЕРСИИ =====
+            versionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Убираем активный класс у всех кнопок
+                    versionButtons.forEach(btn => btn.classList.remove('active'));
+                    // Добавляем активный класс текущей кнопке
+                    this.classList.add('active');
+                    
+                    // Здесь можно добавить логику для разных версий
+                    const version = this.dataset.version;
+                    console.log(`Выбрана версия: ${version}`);
+                });
+            });
+            
+            // ===== ПЛАВНАЯ ПРОКРУТКА =====
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Рассчитываем отступ для header
+                        const headerHeight = document.querySelector('header').offsetHeight;
+                        const targetPosition = targetElement.offsetTop - headerHeight;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Обновляем активную ссылку в навигации
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    }
+                });
+            });
+            
+            // ===== АНИМАЦИИ ПРИ ПРОКРУТКЕ =====
+            function checkAnimations() {
+                const elements = document.querySelectorAll('.animate');
+                
+                elements.forEach(element => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const screenPosition = window.innerHeight * 0.85;
+                    
+                    if (elementPosition < screenPosition) {
+                        const delay = element.style.animationDelay || '0ms';
+                        setTimeout(() => {
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                        }, parseInt(delay) || 0);
+                    }
+                });
+            }
+            
+            // Инициализация анимаций
+            window.addEventListener('scroll', checkAnimations);
+            window.addEventListener('load', checkAnimations);
+            checkAnimations(); // Первоначальная проверка
+            
+            // ===== АКТИВНАЯ НАВИГАЦИЯ ПРИ ПРОКРУТКЕ =====
+            function updateActiveNav() {
+                const sections = document.querySelectorAll('section[id]');
+                const navLinks = document.querySelectorAll('.nav-link');
+                
+                let currentSectionId = '';
+                let minDistance = Infinity;
+                
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+                    
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        currentSectionId = section.id;
+                    }
                 });
                 
-                card.addEventListener('mouseleave', function() {
-                    this.style.zIndex = '1';
+                // Обновляем активную ссылку
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentSectionId}`) {
+                        link.classList.add('active');
+                    }
                 });
+            }
+            
+            window.addEventListener('scroll', updateActiveNav);
+            updateActiveNav(); // Инициализация
+            
+            // ===== ДОПОЛНИТЕЛЬНЫЕ АНИМАЦИИ =====
+            // Плавное появление элементов при загрузке
+            document.querySelectorAll('.feature-card, .stat-card, .step').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 600ms ease, transform 600ms ease';
+                card.style.transitionDelay = `${index * 100}ms`;
             });
             
-            // Add parallax effect to hero background
-            window.addEventListener('scroll', function() {
-                const scrolled = window.pageYOffset;
-                const heroBg = document.querySelector('.hero-bg');
-                if (heroBg) {
-                    heroBg.style.transform = `translateY(${scrolled * 0.5}px)`;
+            // Анимация логотипа при наведении
+            const logoIcon = document.querySelector('.logo-icon');
+            let animationFrame;
+            
+            logoIcon.addEventListener('mouseenter', function() {
+                let rotation = 0;
+                
+                function animate() {
+                    rotation += 2;
+                    if (rotation <= 15) {
+                        logoIcon.style.transform = `rotate(${rotation}deg) scale(1.1)`;
+                        animationFrame = requestAnimationFrame(animate);
+                    }
                 }
+                
+                animate();
+            });
+            
+            logoIcon.addEventListener('mouseleave', function() {
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                }
+                logoIcon.style.transform = 'rotate(0deg) scale(1)';
+            });
+            
+            // Обновление статистики с анимацией чисел
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(value => {
+                const originalText = value.textContent;
+                value.textContent = '0';
+                
+                setTimeout(() => {
+                    let current = 0;
+                    const target = parseInt(originalText);
+                    const increment = target / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            value.textContent = originalText;
+                            clearInterval(timer);
+                        } else {
+                            value.textContent = Math.floor(current) + (originalText.includes('+') ? '+' : '');
+                        }
+                    }, 30);
+                }, 500);
             });
         });
-
-        // Add floating animation to stat items
-        setInterval(function() {
-            document.querySelectorAll('.stat-item').forEach((item, index) => {
-                setTimeout(() => {
-                    item.style.transform = 'translateY(-5px)';
-                    setTimeout(() => {
-                        item.style.transform = 'translateY(0)';
-                    }, 300);
-                }, index * 200);
-            });
-        }, 5000);
     </script>
 </body>
 </html>
