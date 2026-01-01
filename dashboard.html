@@ -3,604 +3,551 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Year in Review - Статистика</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Escrow Trust - Надёжный гарант сделок</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         :root {
-            --tg-blue: #0088cc;
-            --tg-light-blue: #2a9ef1;
-            --tg-dark: #0f1b2d;
-            --tg-darker: #0a1423;
-            --tg-gray: #8a9ba8;
-            --tg-white: #ffffff;
-            --tg-green: #34c759;
-            --tg-purple: #af52de;
-            --tg-yellow: #ffcc00;
-            --tg-red: #ff3b30;
-            --tg-orange: #ff9500;
-            --tg-gradient: linear-gradient(135deg, #0088cc 0%, #2a9ef1 100%);
-            --tg-gradient-dark: linear-gradient(135deg, #0a1423 0%, #1a365d 100%);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --primary-blue: #1a73e8;
+            --dark-blue: #0d47a1;
+            --light-blue: #e8f0fe;
+            --accent-blue: #4285f4;
+            --text-dark: #202124;
+            --text-light: #5f6368;
         }
         
         body {
-            background: var(--tg-gradient-dark);
-            color: var(--tg-white);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-dark);
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 20px;
         }
         
-        .header {
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
-            margin-bottom: 40px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 24px;
-            font-weight: 700;
-        }
-        
-        .logo-icon {
-            color: var(--tg-blue);
-            font-size: 28px;
-        }
-        
-        .logo-text {
-            background: var(--tg-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .user-info {
-            text-align: right;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .user-phone {
-            color: var(--tg-gray);
-            font-size: 14px;
-        }
-        
-        .logout-btn {
-            background: rgba(255, 59, 48, 0.1);
-            color: var(--tg-red);
-            border: 1px solid rgba(255, 59, 48, 0.3);
-            padding: 8px 16px;
-            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
             transition: all 0.3s ease;
         }
         
-        .logout-btn:hover {
-            background: rgba(255, 59, 48, 0.2);
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            position: relative;
+            overflow: hidden;
         }
         
-        .main-title {
-            font-size: 48px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            letter-spacing: -1.5px;
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+            z-index: 2;
         }
         
-        .subtitle {
-            color: var(--tg-gray);
-            font-size: 18px;
-            margin-bottom: 50px;
-            max-width: 600px;
+        .logo:hover .logo-img {
+            transform: rotateY(180deg);
         }
         
-        .highlight {
-            background: var(--tg-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .logo-icon::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(var(--primary-blue) 0%, var(--dark-blue) 100%);
+            animation: rotate 3s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .logo:hover .logo-icon::before {
+            opacity: 1;
+        }
+        
+        .logo-text {
+            font-size: 24px;
             font-weight: 700;
+            position: relative;
         }
         
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+        .logo-text::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: white;
+            bottom: -5px;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+        
+        .logo:hover .logo-text::after {
+            width: 100%;
+        }
+        
+        .nav-btn {
+            background: white;
+            color: var(--primary-blue);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .nav-btn:hover {
+            background: var(--light-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .nav-btn i {
+            margin-left: 8px;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(26, 115, 232, 0.9), rgba(13, 71, 161, 0.9)), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            animation: fadeInUp 1s;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: white;
+            color: var(--primary-blue);
+            padding: 12px 30px;
+            border-radius: 24px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            animation: fadeIn 1.5s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
             margin-bottom: 50px;
+            position: relative;
         }
         
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+        .section-title h2 {
+            font-size: 36px;
+            color: var(--primary-blue);
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+        
+        .section-title h2::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-blue);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
             padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 300px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-icon i {
+            font-size: 36px;
+            color: var(--primary-blue);
+            z-index: 2;
+        }
+        
+        .feature-icon::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-icon::after {
+            transform: scale(1);
+        }
+        
+        .feature-card:hover .feature-icon i {
+            color: white;
+        }
+        
+        .feature-card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+        }
+        
+        .steps {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
         
-        .stat-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
+        .step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--tg-gradient);
-        }
-        
-        .stat-header {
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            border-radius: 50%;
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 15px;
+            font-weight: bold;
+            font-size: 20px;
+            margin-right: 20px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover .step-number {
+            background: var(--primary-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step-content h3 {
+            color: var(--primary-blue);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .trust-counter {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            text-align: center;
+            margin: 30px 0;
+            animation: pulse 2s infinite;
+        }
+        
+        footer {
+            background: var(--dark-blue);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
             margin-bottom: 20px;
         }
         
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
         
-        .stat-title {
-            font-weight: 600;
-            font-size: 18px;
+        .footer-links a:hover {
+            color: var(--light-blue);
         }
         
-        .stat-value {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
-        }
-        
-        .stat-desc {
-            color: var(--tg-gray);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .stat-desc.positive {
-            color: var(--tg-green);
-        }
-        
-        .premium-banner {
-            background: linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, rgba(255, 215, 0, 0.1) 100%);
-            border: 1px solid rgba(255, 204, 0, 0.3);
-            border-radius: 20px;
-            padding: 25px;
-            margin: 40px 0;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .premium-icon {
-            font-size: 32px;
-            color: #ffcc00;
-        }
-        
-        .premium-text h3 {
-            font-size: 22px;
-            margin-bottom: 5px;
-            color: #ffcc00;
-        }
-        
-        .premium-text p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 15px;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--tg-gray);
+        .copyright {
+            opacity: 0.8;
             font-size: 14px;
         }
         
-        .api-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px 15px;
-            border-radius: 10px;
-            font-size: 12px;
-            display: none;
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         
-        .api-status.connected {
-            background: rgba(52, 199, 89, 0.2);
-            color: var(--tg-green);
-            display: block;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
-        .api-status.error {
-            background: rgba(255, 59, 48, 0.2);
-            color: var(--tg-red);
-            display: block;
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
         
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-            
-            .user-info {
-                text-align: left;
-            }
-            
-            .main-title {
-                font-size: 36px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+        .floating {
+            animation: float 3s ease-in-out infinite;
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <div class="logo-icon"><i class="fab fa-telegram"></i></div>
-                <div class="logo-text">Year in Review 2025</div>
-            </div>
-            <div class="user-info">
-                <div class="user-name" id="user-name">Telegram Пользователь</div>
-                <div class="user-phone" id="user-phone">+7 123 456-78-90</div>
-                <button class="logout-btn" id="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Выйти
-                </button>
-            </div>
-        </div>
-        
-        <h1 class="main-title">Ваша статистика 2025</h1>
-        <p class="subtitle">
-            Вот что произошло в вашем Telegram за этот год. Вы <span class="highlight">активнее 87% пользователей</span>!
-        </p>
-        
-        <div class="premium-banner">
-            <div class="premium-icon">
-                <i class="fas fa-crown"></i>
-            </div>
-            <div class="premium-text">
-                <h3>Ты премиум пользователь - ты крут!</h3>
-                <p>Твоя поддержка помогает развивать Telegram. Спасибо, что ты с нами!</p>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <img src="https://i.ibb.co/0j62pDZd/photo-2025-06-06-09-45-02.jpg" alt="Escrow Trust Logo" class="logo-img">
+                    </div>
+                    <div class="logo-text">Escrow Trust</div>
+                </div>
+                <a href="https://t.me/TrustsEscrowRobot" class="nav-btn">
+                    Перейти в бота <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </div>
-        
-        <div class="stats-grid" id="stats-grid">
-            <!-- Статистика будет загружена здесь -->
-        </div>
-        
-        <div class="footer">
-            <p>Telegram Year in Review 2025 • Данные обновляются в реальном времени</p>
-            <p style="margin-top: 10px; font-size: 12px; opacity: 0.7;">
-                Для получения реальных данных требуется авторизация через Telegram API
-            </p>
-        </div>
-    </div>
+    </header>
     
-    <div class="api-status" id="api-status"></div>
-
+    <section class="hero">
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown">@TrustsEscrowRobot</h1>
+            <p class="animate__animated animate__fadeInUp">Escrow Trust - ваш надёжный посредник в сделках. Мы гарантируем безопасность и честность каждой транзакции.</p>
+            <a href="https://t.me/TrustsEscrowRobot" class="btn animate__animated animate__fadeIn">Начать сделку</a>
+        </div>
+    </section>
+    
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Почему именно мы?</h2>
+            </div>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>100% безопасность</h3>
+                    <p>Все сделки защищены многоуровневой системой проверки. Ваши средства или товар в безопасности во время всей сделки.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Мгновенные сделки</h3>
+                    <p>Создавайте и завершайте сделки за считанные минуты. Быстро, просто и без лишних сложностей.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Поддержка 24/7</h3>
+                    <p>Наша команда поддержки всегда готова помочь вам с любыми вопросами в любое время суток.</p>
+                </div>
+            </div>
+            
+            <div class="trust-counter" id="trustCounter">
+                Нам доверяют <span id="counterValue">10,000+</span> пользователей
+            </div>
+        </div>
+    </section>
+    
+    <section class="section" style="background: var(--light-blue);">
+        <div class="container">
+            <div class="section-title">
+                <h2>Как это работает?</h2>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Привязка кошелька</h3>
+                        <p>Подключите ваш криптовалютный кошелёк к системе для возможности проведения безопасных сделок.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Выбор валюты</h3>
+                        <p>Производите сделки непосредственно с указанной вами валютой, на выбор множество валют, даже Telegram Stars.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Создание сделки</h3>
+                        <p>Инициируйте новую сделку, указав все необходимые параметры: сумму, описание товара/услуги и условия.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Оплата сделки</h3>
+                        <p>Покупатель производит оплату, средства блокируются на гарантийном счёте до выполнения условий.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Исполнение обязательств</h3>
+                        <p>Продавец выполняет свои обязательства по сделке (поставка товара, оказание услуги).</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>Подтверждение получения</h3>
+                        <p>Покупатель подтверждает получение товара/услуги в соответствии с условиями сделки.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h3>Завершение сделки</h3>
+                        <p>Средства автоматически переводятся продавцу на указанный кошелёк или банковскую карту.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-logo">Escrow Trust</div>
+            <div class="footer-links">
+                <a href="https://t.me/TrustsEscrowRobot">Перейти в бота</a>
+                <a href="https://t.me/EscrowsSup">Контакты</a>
+                <a href="#">Политика конфиденциальности</a>
+            </div>
+            <div class="copyright">
+                © 2025 Escrow Trust. Все права защищены.
+            </div>
+        </div>
+    </footer>
+    
     <script>
-        // ⚠️ ВАЖНО: Замените этот URL на адрес вашего Python бекенда
-        const API_BASE_URL = 'https://howx2f-molnassss.amvera.io/api'; // У тебя уже правильно!
-        
-        // Статистика по умолчанию (если API не работает)
-        const defaultStats = [
-            {
-                icon: 'fa-comment-dots',
-                iconColor: '#34c759',
-                iconBg: 'rgba(52, 199, 89, 0.15)',
-                title: 'Сообщений отправлено',
-                value: '18,542',
-                desc: '+24% к прошлому году',
-                trend: 'positive'
-            },
-            {
-                icon: 'fa-microphone',
-                iconColor: '#2a9ef1',
-                iconBg: 'rgba(42, 158, 241, 0.15)',
-                title: 'Голосовых сообщений',
-                value: '347',
-                desc: '+42% к прошлому году',
-                trend: 'positive'
-            },
-            {
-                icon: 'fa-circle-nodes',
-                iconColor: '#ff9500',
-                iconBg: 'rgba(255, 149, 0, 0.15)',
-                title: 'Кругов создано',
-                value: '7',
-                desc: '+3 к прошлому году',
-                trend: 'positive'
-            },
-            {
-                icon: 'fa-star',
-                iconColor: '#ffcc00',
-                iconBg: 'rgba(255, 204, 0, 0.15)',
-                title: 'Купленных звезд',
-                value: '128',
-                desc: 'Поддержал 12 создателей',
-                trend: 'positive'
-            },
-            {
-                icon: 'fa-image',
-                iconColor: '#34c759',
-                iconBg: 'rgba(52, 199, 89, 0.15)',
-                title: 'Фото отправлено',
-                value: '2,156',
-                desc: '6 фото в день в среднем',
-                trend: 'positive'
-            },
-            {
-                icon: 'fa-video',
-                iconColor: '#af52de',
-                iconBg: 'rgba(175, 82, 222, 0.15)',
-                title: 'Видео отправлено',
-                value: '187',
-                desc: 'Каждые 2 дня новое видео',
-                trend: 'positive'
-            },
-            {
-                icon: 'fa-clock',
-                iconColor: '#2a9ef1',
-                iconBg: 'rgba(42, 158, 241, 0.15)',
-                title: 'Время в Telegram',
-                value: '1,248 ч',
-                desc: '52 дня непрерывного общения',
-                trend: 'positive'
-            },
-            {
-                icon: 'fa-calendar-day',
-                iconColor: '#34c759',
-                iconBg: 'rgba(52, 199, 89, 0.15)',
-                title: 'Дней с Telegram',
-                value: '365',
-                desc: 'Каждый день года!',
-                trend: 'positive'
-            }
-        ];
-        
-        async function loadStats() {
-            const params = new URLSearchParams(window.location.search);
-            const phone = params.get('phone');
+        // Анимация счётчика доверия
+        function animateCounter() {
+            const min = 10000;
+            const max = 11321;
+            const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+            const formattedNumber = randomNumber.toLocaleString();
             
-            if (!phone) {
-                // Нет номера телефона, показываем демо данные
-                showDemoStats();
-                showApiStatus('error', 'Не указан номер телефона. Показаны демо-данные.');
-                return;
-            }
+            document.getElementById('counterValue').textContent = formattedNumber + '+';
             
-            // Устанавливаем номер телефона в интерфейсе
-            document.getElementById('user-phone').textContent = formatPhone(phone);
-            
-            try {
-                // Пытаемся получить реальные данные с API
-                showApiStatus('loading', 'Загрузка данных...');
-                
-                const response = await fetch(`${API_BASE_URL}/get_stats?phone=${encodeURIComponent(phone)}`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    if (data.success && data.stats) {
-                        // Используем реальные данные с API
-                        displayStats(data.stats);
-                        showApiStatus('connected', 'Данные загружены с API');
-                    } else {
-                        // API вернул ошибку, показываем демо данные
-                        showDemoStats();
-                        showApiStatus('error', 'API вернул ошибку. Показаны демо-данные.');
-                    }
-                } else {
-                    // Ошибка соединения с API
-                    showDemoStats();
-                    showApiStatus('error', 'Ошибка соединения с API. Показаны демо-данные.');
-                }
-            } catch (error) {
-                // Ошибка при запросе к API
-                showDemoStats();
-                showApiStatus('error', `API недоступен: ${API_BASE_URL}. Проверьте настройки.`);
-                console.error('Ошибка при загрузке статистики:', error);
-            }
+            // Добавляем анимацию
+            const counter = document.getElementById('trustCounter');
+            counter.classList.add('animate__animated', 'animate__pulse');
+            setTimeout(() => {
+                counter.classList.remove('animate__animated', 'animate__pulse');
+            }, 1000);
         }
         
-        function showDemoStats() {
-            displayStats(defaultStats);
-            
-            // Устанавливаем случайное имя пользователя для демо
-            const demoNames = ['Алексей', 'Мария', 'Дмитрий', 'Анна', 'Сергей', 'Екатерина'];
-            const randomName = demoNames[Math.floor(Math.random() * demoNames.length)];
-            document.getElementById('user-name').textContent = randomName;
-        }
+        // Обновляем счётчик каждые 5 секунд
+        setInterval(animateCounter, 20000);
         
-        function displayStats(stats) {
-            const statsGrid = document.getElementById('stats-grid');
-            statsGrid.innerHTML = '';
-            
-            if (typeof stats === 'object' && !Array.isArray(stats)) {
-                // Если stats - объект с данными от API
-                const apiStats = [
-                    {
-                        icon: 'fa-comment-dots',
-                        iconColor: '#34c759',
-                        iconBg: 'rgba(52, 199, 89, 0.15)',
-                        title: 'Сообщений отправлено',
-                        value: stats.messages_sent?.toLocaleString() || '18,542',
-                        desc: '+24% к прошлому году',
-                        trend: 'positive'
-                    },
-                    {
-                        icon: 'fa-microphone',
-                        iconColor: '#2a9ef1',
-                        iconBg: 'rgba(42, 158, 241, 0.15)',
-                        title: 'Голосовых сообщений',
-                        value: stats.voice_messages?.toLocaleString() || '347',
-                        desc: '+42% к прошлому году',
-                        trend: 'positive'
-                    },
-                    {
-                        icon: 'fa-circle-nodes',
-                        iconColor: '#ff9500',
-                        iconBg: 'rgba(255, 149, 0, 0.15)',
-                        title: 'Кругов создано',
-                        value: stats.circles_created?.toLocaleString() || '7',
-                        desc: '+3 к прошлому году',
-                        trend: 'positive'
-                    },
-                    {
-                        icon: 'fa-star',
-                        iconColor: '#ffcc00',
-                        iconBg: 'rgba(255, 204, 0, 0.15)',
-                        title: 'Купленных звезд',
-                        value: stats.stars_bought?.toLocaleString() || '128',
-                        desc: 'Поддержал 12 создателей',
-                        trend: 'positive'
-                    },
-                    {
-                        icon: 'fa-image',
-                        iconColor: '#34c759',
-                        iconBg: 'rgba(52, 199, 89, 0.15)',
-                        title: 'Фото отправлено',
-                        value: stats.photos_sent?.toLocaleString() || '2,156',
-                        desc: '6 фото в день в среднем',
-                        trend: 'positive'
-                    },
-                    {
-                        icon: 'fa-video',
-                        iconColor: '#af52de',
-                        iconBg: 'rgba(175, 82, 222, 0.15)',
-                        title: 'Видео отправлено',
-                        value: stats.videos_sent?.toLocaleString() || '187',
-                        desc: 'Каждые 2 дня новое видео',
-                        trend: 'positive'
-                    },
-                    {
-                        icon: 'fa-clock',
-                        iconColor: '#2a9ef1',
-                        iconBg: 'rgba(42, 158, 241, 0.15)',
-                        title: 'Время в Telegram',
-                        value: stats.total_hours ? `${stats.total_hours.toLocaleString()} ч` : '1,248 ч',
-                        desc: '52 дня непрерывного общения',
-                        trend: 'positive'
-                    },
-                    {
-                        icon: 'fa-calendar-day',
-                        iconColor: '#34c759',
-                        iconBg: 'rgba(52, 199, 89, 0.15)',
-                        title: 'Дней с Telegram',
-                        value: stats.active_days?.toLocaleString() || '365',
-                        desc: 'Каждый день года!',
-                        trend: 'positive'
-                    }
-                ];
-                
-                stats = apiStats;
-            }
-            
-            stats.forEach(stat => {
-                const statCard = document.createElement('div');
-                statCard.className = 'stat-card';
-                statCard.innerHTML = `
-                    <div class="stat-header">
-                        <div class="stat-icon" style="background: ${stat.iconBg}; color: ${stat.iconColor};">
-                            <i class="fas ${stat.icon}"></i>
-                        </div>
-                        <div class="stat-title">${stat.title}</div>
-                    </div>
-                    <div class="stat-value">${stat.value}</div>
-                    <div class="stat-desc ${stat.trend}">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>${stat.desc}</span>
-                    </div>
-                `;
-                statsGrid.appendChild(statCard);
-            });
-            
-            // Если пользователь премиум, показываем специальный баннер
-            if (stats.premium_user) {
-                const premiumBanner = document.querySelector('.premium-banner');
-                premiumBanner.style.display = 'flex';
-            }
-        }
-        
-        function formatPhone(phone) {
-            return phone.replace(/(\+\d)(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3-$4-$5');
-        }
-        
-        function showApiStatus(type, message) {
-            const statusEl = document.getElementById('api-status');
-            statusEl.className = `api-status ${type}`;
-            statusEl.innerHTML = `<i class="fas fa-${type === 'connected' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-            
-            if (type === 'loading') {
-                statusEl.innerHTML = `<div class="loader" style="display: inline-block; width: 12px; height: 12px; margin-right: 5px;"></div> ${message}`;
-            }
-        }
-        
-        function logout() {
-            localStorage.removeItem('tg_auth');
-            window.location.href = 'index.html';
-        }
-        
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            loadStats();
-            
-            // Кнопка выхода
-            document.getElementById('logout-btn').addEventListener('click', logout);
-            
-            // Проверяем авторизацию
-            const authData = localStorage.getItem('tg_auth');
-            if (!authData) {
-                // Не авторизован, перенаправляем на страницу авторизации
-                window.location.href = 'index.html';
-            }
-        });
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', animateCounter);
     </script>
 </body>
-
 </html>
-
-
