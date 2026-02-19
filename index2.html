@@ -1,132 +1,228 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Подарки</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web3 NFT Gifts</title>
 <style>
-body { font-family: sans-serif; margin: 20px; background: #121212; color: #eee; }
-h1 { text-align: center; margin-bottom: 20px; }
-.gifts-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-.gift-card { position: relative; width: 150px; cursor: pointer; border-radius: 12px; overflow: hidden; background: #1f1f1f; transition: 0.2s; }
-.gift-card:hover { filter: brightness(1.1); }
-.gift-card img { width: 100%; height: 100%; object-fit: contain; }
-.ribbon { position: absolute; top: 5px; right: -20px; width: 70px; height: 25px; background: linear-gradient(45deg, #a980f3, #5b62d8); transform: rotate(45deg); color: white; font-size: 10px; font-weight: 500; text-align: center; line-height: 25px; }
-.copy-btn { position: absolute; bottom: 5px; right: 5px; background: #333; border: none; color: #fff; font-size: 12px; padding: 2px 5px; cursor: pointer; border-radius: 3px; }
-.unlock-time { font-weight: bold; font-size: 12px; margin-top: 2px; text-align: center; }
-.unlock-red { color: red; }
-.unlock-orange { color: orange; }
-.unlock-green { color: lightgreen; }
-.unlock-blue { color: #00f0ff; }
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; }
-.modal-content { background: #222; padding: 20px; border-radius: 10px; color: #eee; max-width: 400px; text-align: center; }
-.modal-close { cursor: pointer; margin-top: 10px; background: #555; border: none; padding: 5px 10px; border-radius: 5px; color: #fff; }
+  /* === Общие стили === */
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Orbitron', sans-serif;
+    background: #000 url('https://i.ibb.co/2cLPR1R/rain-bg.gif') center center / cover no-repeat;
+    color: #d8d8ff;
+  }
+  h1 {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 2em;
+    letter-spacing: 2px;
+  }
+
+  /* === Контейнер и поиск === */
+  .container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 20px;
+  }
+  .search-box {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 10px;
+  }
+  .search-box input, .search-box select {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+  }
+  .search-box input::placeholder { color: #aaa; }
+  .search-box button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #5b62d8;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .search-box button:hover {
+    background: #a980f3;
+  }
+
+  /* === Сетка подарков === */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+  .gift-card {
+    background: rgba(40, 40, 40, 0.7);
+    border-radius: 20px;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+  }
+  .gift-card:hover {
+    transform: translateY(-5px);
+    filter: brightness(1.2);
+  }
+
+  /* === Изображение подарка и ленточка === */
+  .gift-card img {
+    width: 100%;
+    border-radius: 16px;
+    object-fit: contain;
+  }
+  .ribbon {
+    position: absolute;
+    top: 10px;
+    right: -10px;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(45deg, #a980f3, #5b62d8);
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 50% 100%, 0 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.9em;
+    pointer-events: none;
+  }
+
+  /* === Информация о подарке === */
+  .gift-info {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .unlock-date {
+    font-weight: bold;
+  }
+  .copy-link {
+    margin-top: 5px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 8px;
+    background: #5b62d8;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .copy-link:hover { background: #a980f3; }
 </style>
 </head>
 <body>
 
-<h1>Подарки</h1>
-<div class="gifts-container" id="giftsContainer"></div>
+<h1>🎁 Web3 NFT Gifts</h1>
 
-<div class="modal" id="giftModal">
-  <div class="modal-content" id="modalContent">
-    <h2 id="modalTitle"></h2>
-    <img id="modalImg" src="" style="width: 200px; margin: 10px 0;">
-    <p id="modalModel"></p>
-    <p id="modalBackground"></p>
-    <p id="modalPattern"></p>
-    <a id="modalLink" href="#" target="_blank">Ссылка на подарок</a>
-    <br>
-    <button class="modal-close" onclick="closeModal()">Закрыть</button>
+<div class="container">
+  <div class="search-box">
+    <select id="giftSelect">
+      <option value="">Все подарки</option>
+    </select>
+    <input type="number" id="giftNumber" placeholder="Найти по номеру">
+    <button onclick="searchGifts()">Поиск</button>
   </div>
+  <div id="foundCount" style="text-align:center;margin-bottom:10px;"></div>
+  <div class="grid" id="giftsGrid"></div>
 </div>
 
 <script>
-const JSON_URL = 'https://ideatg-ideatg.amvera.io/all_gifts.json';
-const giftsContainer = document.getElementById('giftsContainer');
-const modal = document.getElementById('giftModal');
-const modalTitle = document.getElementById('modalTitle');
-const modalImg = document.getElementById('modalImg');
-const modalModel = document.getElementById('modalModel');
-const modalBackground = document.getElementById('modalBackground');
-const modalPattern = document.getElementById('modalPattern');
-const modalLink = document.getElementById('modalLink');
+const GIFTS_TYPES = [
+  "LunarSnake","CandyCane","SnowGlobe","SkullFlower","WinterWreath","XmasStocking",
+  "HolidayDrink","LootBag","SwagBag","SnowMittens","PetSnake","GenieLamp","DiamondRing",
+  "SpicedWine","JesterHat","TopHat","JoyfulBundle","SnakeBox","SnoopDogg","BunnyMuffin",
+  "TamaGadget","LovePotion","EternalCandle","CupidCharm","NailBracelet","VoodooDoll",
+  "JackInTheBox","HexPot","BDayCandle","LushBouquet","GingerCookie","BigYear","JingleBells",
+  "WitchHat","SignetRing","BowTie","SnoopCigar","JellyBunny","ToyBear","NekoHelmet",
+  "ElectricSkull","CrystalBall","LolPop","SantaHat","HomemadeCake","KissedFrog","LightSword",
+  "CookieHeart","HypnoLollipop","PartySparkler","BondedRing","VintageCigar","EvilEye",
+  "DeskCalendar","TrappedHeart","MadPumpkin","HangingStar","WhipCupcake","StarNotepad",
+  "SakuraFlower","RestlessJar","FlyingBroom","SwissWatch","LowRider","SharpTongue",
+  "StellarRocket","Moonpendant","EasterEgg","BerryBox","RecordPlayer","JollyChimp",
+  "IonicDryer","EternalRose","LoveCandle","ValentineBox","InputKey","SpringBasket",
+  "InstantRamen","MousseCake","IceCream","HappyBrownie","FreshSocks","CloverPin",
+  "BlingBinky","KhabibsPapakha","FaithAmulet","MoneyPot","HeroicHelmet","PreciousPeach",
+  "Westsidesign","HeartLocket","ScaredCat","IonGem","PlushPepe","PerfumeBottle",
+  "AstralShard","MiniOscar","DurovsCap","MagicPotion","SleighBell","VictoryMedal",
+  "UFCStrike","PrettyPosy"
+];
 
-function calculateUnlockColor(daysLeft) {
-    if (daysLeft >= 16) return 'unlock-red';
-    if (daysLeft >= 5) return 'unlock-orange';
-    if (daysLeft >= 1) return 'unlock-green';
-    return 'unlock-blue';
-}
+const giftSelect = document.getElementById("giftSelect");
+GIFTS_TYPES.forEach(g => {
+  const opt = document.createElement("option");
+  opt.value = g;
+  opt.textContent = g;
+  giftSelect.appendChild(opt);
+});
 
-function daysBetween(date1, date2) {
-    return Math.ceil((date2 - date1)/(1000*60*60*24));
-}
-
-function createGiftCard(g) {
-    const card = document.createElement('div');
-    card.className = 'gift-card';
-
-    // картинка
-    const img = document.createElement('img');
-    img.src = `https://nft.fragment.com/gift/${g.gift_name}-${g.gift_id}.medium.jpg`;
-    img.alt = `${g.gift_name} #${g.gift_id}`;
-    card.appendChild(img);
-
-    // ленточка с номером
-    const ribbon = document.createElement('div');
-    ribbon.className = 'ribbon';
-    ribbon.textContent = `#${g.gift_id}`;
-    card.appendChild(ribbon);
-
-    // кнопка копировать ссылку
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'copy-btn';
-    copyBtn.textContent = '📋';
-    copyBtn.onclick = (e) => { 
-        e.stopPropagation();
-        navigator.clipboard.writeText(`https://t.me/nft/${g.gift_name}-${g.gift_id}`);
-        alert('Ссылка скопирована!');
-    }
-    card.appendChild(copyBtn);
-
-    // информация о разлоке
-    const parseDateParts = g.parse_date.split('.'); // dd.mm.yyyy
-    const parseDate = new Date(`${parseDateParts[2]}-${parseDateParts[1]}-${parseDateParts[0]}T00:00:00`);
-    const unlockDate = new Date(parseDate);
-    unlockDate.setDate(parseDate.getDate() + 21);
-    const daysLeft = daysBetween(new Date(), unlockDate);
-    const unlockSpan = document.createElement('div');
-    unlockSpan.className = 'unlock-time ' + calculateUnlockColor(daysLeft);
-    unlockSpan.textContent = `Разлок через: ${daysLeft} дней`;
-    card.appendChild(unlockSpan);
-
-    // клик открывает модал
-    card.onclick = () => {
-        modalTitle.textContent = `${g.gift_name} #${g.gift_id}`;
-        modalImg.src = img.src;
-        modalModel.textContent = `Model: ${g.model || '-'}`;
-        modalBackground.textContent = `Background: ${g.background || '-'}`;
-        modalPattern.textContent = `Pattern: ${g.pattern || '-'}`;
-        modalLink.href = `https://t.me/nft/${g.gift_name}-${g.gift_id}`;
-        modal.style.display = 'flex';
-    }
-
-    return card;
-}
-
-function closeModal() { modal.style.display = 'none'; }
+let allGifts = [];
 
 async function loadGifts() {
-    try {
-        const resp = await fetch(JSON_URL);
-        const gifts = await resp.json();
-        gifts.forEach(g => giftsContainer.appendChild(createGiftCard(g)));
-    } catch(e) {
-        console.error("Ошибка загрузки JSON:", e);
-    }
+  try {
+    const res = await fetch('/all_gifts.json');
+    allGifts = await res.json();
+    displayGifts(allGifts);
+  } catch(e) {
+    console.error("Ошибка загрузки JSON:", e);
+  }
 }
 
-loadGifts();
+function displayGifts(gifts) {
+  const grid = document.getElementById("giftsGrid");
+  grid.innerHTML = '';
+  gifts.forEach(g => {
+    const now = new Date();
+    const sendDate = new Date(g.scheduled_send_date.split('.').reverse().join('-'));
+    let diff = Math.ceil((sendDate - now) / (1000*60*60*24));
+
+    let color = '#fff';
+    if(diff >= 16) color = 'red';
+    else if(diff >= 5) color = 'orange';
+    else if(diff >= 1) color = 'green';
+    else color = 'deepskyblue';
+
+    const card = document.createElement('div');
+    card.className = 'gift-card';
+    card.innerHTML = `
+      <img src="https://nft.fragment.com/gift/${g.gift_name}-${g.gift_id}.medium.jpg" alt="${g.gift_name} #${g.gift_id}">
+      <div class="ribbon">#${g.gift_id}</div>
+      <div class="gift-info">
+        <div>${g.gift_name}</div>
+        <div class="unlock-date" style="color:${color}">Разлок через: ${diff} дн.</div>
+        <button class="copy-link" onclick="copyLink('${g.url}')">Скопировать ссылку</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  document.getElementById('foundCount').textContent = `Найдено: ${gifts.length} подарков`;
+}
+
+function copyLink(url) {
+  navigator.clipboard.writeText(url);
+  alert("Ссылка скопирована!");
+}
+
+function searchGifts() {
+  const name = giftSelect.value;
+  const number = document.getElementById("giftNumber").value;
+  let filtered = allGifts;
+
+  if(name) filtered = filtered.filter(g => g.gift_name === name);
+  if(number) filtered = filtered.filter(g => g.gift_id == number);
+
+  displayGifts(filtered);
+}
+
+window.onload = loadGifts;
 </script>
 
 </body>
