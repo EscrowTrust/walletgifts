@@ -39,6 +39,12 @@
             padding: 0 28px;
         }
 
+        .container-narrow {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
         header {
             position: fixed;
             top: 0;
@@ -69,6 +75,8 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            cursor: pointer;
+            transition: opacity 0.2s;
         }
         .logo i {
             background: none;
@@ -76,6 +84,9 @@
             background-clip: unset;
             color: #3b82f6;
             font-size: 1.7rem;
+        }
+        .logo:hover {
+            opacity: 0.85;
         }
 
         nav ul {
@@ -396,6 +407,65 @@
             margin-bottom: 32px;
         }
 
+        .legal-page {
+            padding: 140px 0 80px;
+            min-height: 100vh;
+        }
+        .legal-header {
+            margin-bottom: 48px;
+            text-align: left;
+        }
+        .legal-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(120deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 16px;
+        }
+        .legal-header p {
+            color: #7e8bb6;
+            font-size: 0.9rem;
+        }
+        .legal-content {
+            background: rgba(17, 25, 45, 0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 32px;
+            padding: 48px 56px;
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+        .legal-content h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #60a5fa;
+            margin: 28px 0 16px 0;
+        }
+        .legal-content h2:first-of-type {
+            margin-top: 0;
+        }
+        .legal-content h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #93c5fd;
+            margin: 20px 0 12px 0;
+        }
+        .legal-content p {
+            color: #cbd5e6;
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+        .legal-content ul, .legal-content ol {
+            margin: 12px 0 20px 32px;
+            color: #cbd5e6;
+        }
+        .legal-content li {
+            margin-bottom: 8px;
+        }
+        .legal-content strong {
+            color: #ffffff;
+        }
+
         footer {
             border-top: 1px solid rgba(59,130,246,0.2);
             padding: 48px 0 32px;
@@ -446,6 +516,8 @@
             .section-title { font-size: 2rem; }
             nav ul { gap: 24px; }
             .sticker-gif { max-width: 260px; }
+            .legal-content { padding: 32px 24px; }
+            .legal-header h1 { font-size: 2rem; }
         }
         @media (max-width: 640px) {
             .header-content { flex-wrap: wrap; justify-content: center; }
@@ -453,6 +525,9 @@
             .hero { padding: 150px 0 70px; }
             .btn-primary { padding: 10px 20px; }
             .sticker-gif { max-width: 220px; }
+            .legal-content { padding: 24px 20px; }
+            .legal-header h1 { font-size: 1.7rem; }
+            .legal-content h2 { font-size: 1.3rem; }
         }
     </style>
 </head>
@@ -460,157 +535,220 @@
 
 <canvas id="rainCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.45;"></canvas>
 
-<header style="position: relative; z-index: 10;">
-    <div class="container header-content">
-        <div class="logo">
-            <i class="fa-solid fa-shield-halved"></i> Escrow Trust
+<div id="app">
+    <header style="position: relative; z-index: 10;">
+        <div class="container header-content">
+            <div class="logo" id="homeLink">
+                <i class="fa-solid fa-shield-halved"></i> Escrow Trust
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" data-nav="home">Как работает</a></li>
+                    <li><a href="#" data-nav="home">Преимущества</a></li>
+                    <li><a href="#" data-nav="home">Отзывы</a></li>
+                    <li><a href="#" data-nav="home">Поддержка</a></li>
+                </ul>
+            </nav>
+            <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn-primary"><i class="fa-brands fa-telegram"></i> Перейти в бота</a>
         </div>
-        <nav>
-            <ul>
-                <li><a href="#how">Как работает</a></li>
-                <li><a href="#features">Преимущества</a></li>
-                <li><a href="#testimonials">Отзывы</a></li>
-                <li><a href="#support">Поддержка</a></li>
-            </ul>
-        </nav>
-        <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn-primary"><i class="fa-brands fa-telegram"></i> Перейти в бота</a>
-    </div>
-</header>
+    </header>
 
-<main style="position: relative; z-index: 5;">
-    <section class="hero">
-        <div class="container hero-grid">
-            <div class="hero-text fade-up">
-                <h1>Безопасные сделки с NFT-подарками в Telegram</h1>
-                <p>Escrow-сервис. Покупатель платит — бот блокирует средства — вы передаёте подарок — получаете деньги. Никакого обмана.</p>
-                <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn-primary" style="padding: 14px 36px; font-size: 1rem;"><i class="fa-regular fa-handshake"></i> Начать сделку →</a>
-            </div>
-            <div class="hero-sticker fade-up">
-                <img class="sticker-gif" src="sticker.gif" alt="Анимированный стикер" draggable="false">
+    <main style="position: relative; z-index: 5;" id="mainContent">
+        <div id="homePage">
+            <section class="hero">
+                <div class="container hero-grid">
+                    <div class="hero-text fade-up">
+                        <h1>Безопасные сделки с NFT-подарками в Telegram</h1>
+                        <p>Escrow-сервис. Покупатель платит — бот блокирует средства — вы передаёте подарок — получаете деньги. Никакого обмана.</p>
+                        <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn-primary" style="padding: 14px 36px; font-size: 1rem;"><i class="fa-regular fa-handshake"></i> Начать сделку →</a>
+                    </div>
+                    <div class="hero-sticker fade-up">
+                        <img class="sticker-gif" src="sticker.gif" alt="Анимированный стикер" draggable="false">
+                    </div>
+                </div>
+            </section>
+
+            <section id="how" class="container" style="padding: 80px 0;">
+                <h2 class="section-title fade-up">Как работает Escrow Trust</h2>
+                <div class="steps-grid">
+                    <div class="step-card fade-up" data-glow>
+                        <div class="step-icon"><i class="fa-regular fa-pen-to-square"></i></div>
+                        <h3>1. Создаёте сделку</h3>
+                        <p>Укажите сумму, условия передачи NFT-подарка и реквизиты в боте за пару кликов.</p>
+                    </div>
+                    <div class="step-card fade-up" data-glow>
+                        <div class="step-icon"><i class="fa-solid fa-coins"></i></div>
+                        <h3>2. Покупатель оплачивает</h3>
+                        <p>Средства поступают и надежно блокируются на транзитном защищённом счёте.</p>
+                    </div>
+                    <div class="step-card fade-up" data-glow>
+                        <div class="step-icon"><i class="fa-solid fa-gift"></i></div>
+                        <h3>3. Передаёте подарок</h3>
+                        <p>Вы отправляете NFT-подарок, бот фиксирует факт успешной передачи.</p>
+                    </div>
+                    <div class="step-card fade-up" data-glow>
+                        <div class="step-icon"><i class="fa-regular fa-credit-card"></i></div>
+                        <h3>4. Получаете деньги</h3>
+                        <p>Средства мгновенно разблокируются и поступают на вашу карту.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" style="background: radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.08), transparent); padding: 80px 0;">
+                <div class="container">
+                    <h2 class="section-title fade-up">Почему выбирают нас</h2>
+                    <div class="features-grid">
+                        <div class="feature-card fade-up" data-glow>
+                            <i class="fa-solid fa-shield-check"></i>
+                            <div class="feature-info">
+                                <h3>Безопасность сделок</h3>
+                                <p>Криптографическая блокировка средств, двухфакторное подтверждение и полное логирование.</p>
+                            </div>
+                        </div>
+                        <div class="feature-card fade-up" data-glow>
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                            <div class="feature-info">
+                                <h3>Мгновенные выплаты</h3>
+                                <p>Автоматические переводы в течение 5–10 минут после верификации передачи подарка.</p>
+                            </div>
+                        </div>
+                        <div class="feature-card fade-up" data-glow>
+                            <i class="fa-solid fa-file-shield"></i>
+                            <div class="feature-info">
+                                <h3>Полная прозрачность</h3>
+                                <p>История сделок, публичный escrow-контракт и поддержка спорных ситуаций арбитром.</p>
+                            </div>
+                        </div>
+                        <div class="feature-card fade-up" data-glow>
+                            <i class="fa-solid fa-headset"></i>
+                            <div class="feature-info">
+                                <h3>Поддержка 24/7</h3>
+                                <p>Мы на связи в Telegram (@SupEscrow), помогаем на любом этапе сделки.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="testimonials" class="container" style="padding: 80px 0;">
+                <h2 class="section-title fade-up">Что говорят пользователи</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card fade-up" data-glow>
+                        <i class="fa-solid fa-quote-right"></i>
+                        <p class="testimonial-text">“Продал подарок за 13 000 ₽ — деньги пришли за 4 минуты. Всё чётко, интерфейс интуитивный. Лучший escrow-бот в Telegram!”</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">А</div>
+                            <div><h4>Алексей</h4><span style="color:#7e8bb6;">Продавец NFT</span></div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card fade-up" data-glow>
+                        <i class="fa-solid fa-quote-right"></i>
+                        <p class="testimonial-text">“Раньше боялась покупать NFT-подарки, но с гарантом сделка прошла как по маслу. Блокировка денег реально работает.”</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar" style="background: linear-gradient(145deg, #8b5cf6, #6d28d9);">М</div>
+                            <div><h4>Марина</h4><span style="color:#7e8bb6;">Покупатель</span></div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card fade-up" data-glow>
+                        <i class="fa-solid fa-quote-right"></i>
+                        <p class="testimonial-text">“Поддержка решила спор за 10 минут, хотя проблема была в банке. Очень профессионально и надёжно. Советую всем.”</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar" style="background: linear-gradient(145deg, #10b981, #047857);">Д</div>
+                            <div><h4>Дмитрий</h4><span style="color:#7e8bb6;">Постоянный пользователь</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="support" class="support-section" style="padding: 80px 0;">
+                <div class="container fade-up">
+                    <div class="support-box" data-glow>
+                        <i class="fa-solid fa-circle-info" style="font-size: 3rem; color: #3b82f6; margin-bottom: 16px; display: inline-block;"></i>
+                        <h2>Официальная поддержка</h2>
+                        <p>Возникли вопросы по сделке, оплате или нужна помощь? Пишите в наш официальный аккаунт. <br><strong style="color:#facc15;">Внимание:</strong> Остерегайтесь мошенников — только @SupEscrow имеет отношение к Escrow Trust.</p>
+                        <a href="https://t.me/SupEscrow" target="_blank" class="btn-primary"><i class="fa-brands fa-telegram"></i> Написать в @SupEscrow</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="termsPage" style="display: none;">
+            <div class="legal-page">
+                <div class="container-narrow">
+                    <div class="legal-header fade-up">
+                        <h1>Пользовательское соглашение</h1>
+                        <p>Escrow Trust (@TrustsEscrowRobot) · Актуальная версия от 2026 года</p>
+                    </div>
+                    <div class="legal-content fade-up">
+                        <h2>1. Общие положения</h2>
+                        <p>1.1. Настоящее Соглашение регулирует отношения между сервисом Escrow Trust (далее — «Сервис») и пользователем (далее — «Пользователь»), использующим бота @TrustsEscrowRobot для проведения сделок с NFT-подарками в Telegram.</p>
+                        <p>1.2. Используя Сервис, Пользователь полностью и безоговорочно принимает условия настоящего Соглашения.</p>
+                        <p>1.3. Сервис выступает в качестве гаранта (escrow-агента) при проведении сделок между продавцом и покупателем.</p>
+
+                        <h2>2. Предмет соглашения</h2>
+                        <p>2.1. Сервис предоставляет Пользователю доступ к автоматизированной системе для безопасного проведения сделок с NFT-подарками.</p>
+                        <p>2.2. Сервис блокирует денежные средства покупателя на время сделки и переводит их продавцу только после подтверждения передачи подарка.</p>
+
+                        <h2>3. Порядок проведения сделок</h2>
+                        <p>3.1. Продавец создаёт сделку, указывая реквизиты для получения оплаты и описание товара.</p>
+                        <p>3.2. Покупатель переводит средства на реквизиты, предоставленные ботом.</p>
+                        <p>3.3. После подтверждения оплаты продавец передаёт NFT-подарок покупателю.</p>
+                        <p>3.4. Покупатель подтверждает получение подарка, после чего средства переводятся продавцу.</p>
+                        <p>3.5. В случае возникновения технических ошибок при зачислении средств, Сервис оказывает поддержку в соответствии с внутренним регламентом.</p>
+
+                        <h2>4. Права и обязанности сторон</h2>
+                        <p><strong>4.1. Сервис обязуется:</strong></p>
+                        <ul>
+                            <li>Обеспечивать работоспособность бота и безопасность транзакций.</li>
+                            <li>Не разглашать персональные данные Пользователей третьим лицам.</li>
+                            <li>Оказывать техническую поддержку через официальный аккаунт @SupEscrow.</li>
+                        </ul>
+                        <p><strong>4.2. Пользователь обязуется:</strong></p>
+                        <ul>
+                            <li>Предоставлять достоверные данные при создании сделки.</li>
+                            <li>Не использовать Сервис для мошеннических действий.</li>
+                            <li>Самостоятельно проверять реквизиты перед подтверждением сделки.</li>
+                        </ul>
+
+                        <h2>5. Ограничение ответственности</h2>
+                        <p>5.1. Сервис не несёт ответственности за:</p>
+                        <ul>
+                            <li>Действия банков-эмитентов и платёжных систем, включая отклонение или задержку переводов.</li>
+                            <li>Убытки, возникшие вследствие предоставления Пользователем недостоверных данных.</li>
+                            <li>Действия третьих лиц, выдающих себя за сотрудников Сервиса.</li>
+                        </ul>
+                        <p>5.2. Сервис не является коммерческой организацией и не предоставляет услуг, требующих лицензирования.</p>
+
+                        <h2>6. Разрешение споров</h2>
+                        <p>6.1. Все споры и разногласия решаются путём переговоров через официальный канал поддержки @SupEscrow.</p>
+                        <p>6.2. В случае невозможности урегулирования спора, он подлежит рассмотрению в соответствии с применимым законодательством.</p>
+
+                        <h2>7. Заключительные положения</h2>
+                        <p>7.1. Сервис оставляет за собой право вносить изменения в настоящее Соглашение без предварительного уведомления Пользователей.</p>
+                        <p>7.2. Актуальная версия Соглашения всегда доступна на официальном сайте Сервиса.</p>
+                        <p>7.3. Начиная использовать Сервис, Пользователь подтверждает, что ознакомился с условиями настоящего Соглашения и принимает их в полном объёме.</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </section>
+    </main>
 
-    <section id="how" class="container" style="padding: 80px 0;">
-        <h2 class="section-title fade-up">Как работает Escrow Trust</h2>
-        <div class="steps-grid">
-            <div class="step-card fade-up" data-glow>
-                <div class="step-icon"><i class="fa-regular fa-pen-to-square"></i></div>
-                <h3>1. Создаёте сделку</h3>
-                <p>Укажите сумму, условия передачи NFT-подарка и реквизиты в боте за пару кликов.</p>
-            </div>
-            <div class="step-card fade-up" data-glow>
-                <div class="step-icon"><i class="fa-solid fa-coins"></i></div>
-                <h3>2. Покупатель оплачивает</h3>
-                <p>Средства поступают и надежно блокируются на транзитном защищённом счёте.</p>
-            </div>
-            <div class="step-card fade-up" data-glow>
-                <div class="step-icon"><i class="fa-solid fa-gift"></i></div>
-                <h3>3. Передаёте подарок</h3>
-                <p>Вы отправляете NFT-подарок, бот фиксирует факт успешной передачи.</p>
-            </div>
-            <div class="step-card fade-up" data-glow>
-                <div class="step-icon"><i class="fa-regular fa-credit-card"></i></div>
-                <h3>4. Получаете деньги</h3>
-                <p>Средства мгновенно разблокируются и поступают на вашу карту.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="features" style="background: radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.08), transparent); padding: 80px 0;">
+    <footer style="position: relative; z-index: 5;">
         <div class="container">
-            <h2 class="section-title fade-up">Почему выбирают нас</h2>
-            <div class="features-grid">
-                <div class="feature-card fade-up" data-glow>
-                    <i class="fa-solid fa-shield-check"></i>
-                    <div class="feature-info">
-                        <h3>Безопасность сделок</h3>
-                        <p>Криптографическая блокировка средств, двухфакторное подтверждение и полное логирование.</p>
-                    </div>
+            <div class="footer-content">
+                <div class="logo" style="font-size: 1.3rem; cursor: pointer;" id="footerHomeLink"><i class="fa-solid fa-shield-halved"></i> Escrow Trust</div>
+                <div class="footer-links">
+                    <a href="#" id="termsLink">Пользовательское соглашение</a>
+                    <a href="#">Арбитраж</a>
                 </div>
-                <div class="feature-card fade-up" data-glow>
-                    <i class="fa-solid fa-bolt-lightning"></i>
-                    <div class="feature-info">
-                        <h3>Мгновенные выплаты</h3>
-                        <p>Автоматические переводы в течение 5–10 минут после верификации передачи подарка.</p>
-                    </div>
-                </div>
-                <div class="feature-card fade-up" data-glow>
-                    <i class="fa-solid fa-file-shield"></i>
-                    <div class="feature-info">
-                        <h3>Полная прозрачность</h3>
-                        <p>История сделок, публичный escrow-контракт и поддержка спорных ситуаций арбитром.</p>
-                    </div>
-                </div>
-                <div class="feature-card fade-up" data-glow>
-                    <i class="fa-solid fa-headset"></i>
-                    <div class="feature-info">
-                        <h3>Поддержка 24/7</h3>
-                        <p>Мы на связи в Telegram (@SupEscrow), помогаем на любом этапе сделки.</p>
-                    </div>
-                </div>
+                <div><a href="https://t.me/TrustsEscrowRobot" target="_blank" style="font-weight: 600; color: #3b82f6; text-decoration: none;">@TrustsEscrowRobot</a></div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Escrow Trust — безопасные сделки с NFT-подарками. Все права защищены.</p>
             </div>
         </div>
-    </section>
-
-    <section id="testimonials" class="container" style="padding: 80px 0;">
-        <h2 class="section-title fade-up">Что говорят пользователи</h2>
-        <div class="testimonials-grid">
-            <div class="testimonial-card fade-up" data-glow>
-                <i class="fa-solid fa-quote-right"></i>
-                <p class="testimonial-text">“Продал подарок за 13 000 ₽ — деньги пришли за 4 минуты. Всё чётко, интерфейс интуитивный. Лучший escrow-бот в Telegram!”</p>
-                <div class="testimonial-author">
-                    <div class="author-avatar">А</div>
-                    <div><h4>Алексей</h4><span style="color:#7e8bb6;">Продавец NFT</span></div>
-                </div>
-            </div>
-            <div class="testimonial-card fade-up" data-glow>
-                <i class="fa-solid fa-quote-right"></i>
-                <p class="testimonial-text">“Раньше боялась покупать NFT-подарки, но с гарантом сделка прошла как по маслу. Блокировка денег реально работает.”</p>
-                <div class="testimonial-author">
-                    <div class="author-avatar" style="background: linear-gradient(145deg, #8b5cf6, #6d28d9);">М</div>
-                    <div><h4>Марина</h4><span style="color:#7e8bb6;">Покупатель</span></div>
-                </div>
-            </div>
-            <div class="testimonial-card fade-up" data-glow>
-                <i class="fa-solid fa-quote-right"></i>
-                <p class="testimonial-text">“Поддержка решила спор за 10 минут, хотя проблема была в банке. Очень профессионально и надёжно. Советую всем.”</p>
-                <div class="testimonial-author">
-                    <div class="author-avatar" style="background: linear-gradient(145deg, #10b981, #047857);">Д</div>
-                    <div><h4>Дмитрий</h4><span style="color:#7e8bb6;">Постоянный пользователь</span></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="support" class="support-section" style="padding: 80px 0;">
-        <div class="container fade-up">
-            <div class="support-box" data-glow>
-                <i class="fa-solid fa-circle-info" style="font-size: 3rem; color: #3b82f6; margin-bottom: 16px; display: inline-block;"></i>
-                <h2>Официальная поддержка</h2>
-                <p>Возникли вопросы по сделке, оплате или нужна помощь? Пишите в наш официальный аккаунт. <br><strong style="color:#facc15;">Внимание:</strong> Остерегайтесь мошенников — только @SupEscrow имеет отношение к Escrow Trust.</p>
-                <a href="https://t.me/SupEscrow" target="_blank" class="btn-primary"><i class="fa-brands fa-telegram"></i> Написать в @SupEscrow</a>
-            </div>
-        </div>
-    </section>
-</main>
-
-<footer style="position: relative; z-index: 5;">
-    <div class="container">
-        <div class="footer-content">
-            <div class="logo" style="font-size: 1.3rem;"><i class="fa-solid fa-shield-halved"></i> Escrow Trust</div>
-            <div class="footer-links">
-                <a href="#">Политика конфиденциальности</a>
-                <a href="#">Условия использования</a>
-                <a href="#">Арбитраж</a>
-            </div>
-            <div><a href="https://t.me/TrustsEscrowRobot" target="_blank" style="font-weight: 600; color: #3b82f6; text-decoration: none;">@TrustsEscrowRobot</a></div>
-        </div>
-        <div class="footer-bottom">
-            <p>© 2026 Escrow Trust — безопасные сделки с NFT-подарками. Все права защищены.</p>
-        </div>
-    </div>
-</footer>
+    </footer>
+</div>
 
 <script>
     const lenis = new Lenis({
@@ -624,7 +762,50 @@
     }
     requestAnimationFrame(raf);
 
-    const fadeElements = document.querySelectorAll('.fade-up');
+    const homePage = document.getElementById('homePage');
+    const termsPage = document.getElementById('termsPage');
+    const homeLinks = document.querySelectorAll('#homeLink, #footerHomeLink, [data-nav="home"]');
+    const termsLink = document.getElementById('termsLink');
+
+    function showHome() {
+        homePage.style.display = 'block';
+        termsPage.style.display = 'none';
+        window.scrollTo(0, 0);
+        lenis.scrollTo(0, { immediate: true });
+        document.title = 'Escrow Trust | Безопасные сделки с NFT-подарками';
+    }
+
+    function showTerms() {
+        homePage.style.display = 'none';
+        termsPage.style.display = 'block';
+        window.scrollTo(0, 0);
+        lenis.scrollTo(0, { immediate: true });
+        document.title = 'Пользовательское соглашение | Escrow Trust';
+        const fadeTerms = document.querySelectorAll('#termsPage .fade-up');
+        fadeTerms.forEach(el => {
+            el.classList.add('visible');
+        });
+    }
+
+    homeLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            showHome();
+            const fadeElements = document.querySelectorAll('#homePage .fade-up');
+            fadeElements.forEach(el => {
+                if (!el.classList.contains('visible')) {
+                    el.classList.add('visible');
+                }
+            });
+        });
+    });
+
+    termsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showTerms();
+    });
+
+    const fadeElements = document.querySelectorAll('#homePage .fade-up');
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -634,15 +815,6 @@
         });
     }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
     fadeElements.forEach(el => observer.observe(el));
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            const target = document.getElementById(targetId);
-            if (target) lenis.scrollTo(target);
-        });
-    });
 
     const glowElements = document.querySelectorAll('[data-glow]');
     glowElements.forEach(el => {
@@ -690,23 +862,16 @@
     function drawRain() {
         if (!ctx) return;
         ctx.clearRect(0, 0, width, height);
-        
         for (let i = 0; i < raindrops.length; i++) {
             const drop = raindrops[i];
             ctx.beginPath();
-            const startX = drop.x;
-            const startY = drop.y;
-            const endX = startX + drop.sway;
-            const endY = startY + drop.length;
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(endX, endY);
+            ctx.moveTo(drop.x, drop.y);
+            ctx.lineTo(drop.x + drop.sway, drop.y + drop.length);
             ctx.lineWidth = drop.thickness;
             ctx.strokeStyle = `rgba(148, 187, 255, ${drop.opacity})`;
             ctx.stroke();
-            
             drop.y += drop.speed;
             drop.x += drop.sway * 0.15;
-            
             if (drop.y > height + 40 || drop.x < -30 || drop.x > width + 30) {
                 drop.y = -Math.random() * 50 - 20;
                 drop.x = Math.random() * width;
