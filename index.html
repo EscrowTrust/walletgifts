@@ -1,1314 +1,892 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Escrow Trust — Гарант-сервис для NFT-подарков Telegram</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrustEscrow — безопасные сделки с NFT-подарками в Telegram</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & VARIABLES ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --bg: #0b0e17;
+      --surface: #111626;
+      --card: #161c2e;
+      --card-hover: #1d2540;
+      --border: rgba(255,255,255,0.05);
+      --border-light: rgba(255,255,255,0.08);
+      --text: #f0f2f8;
+      --text-secondary: #9ba2b8;
+      --text-dim: #6d758f;
+      --accent: #1ea5ff;
+      --accent-hover: #4db8ff;
+      --accent-glow: rgba(30,165,255,0.3);
+      --radius: 24px;
+      --radius-sm: 16px;
+      --radius-full: 9999px;
+      --shadow-card: 0 20px 40px -12px rgba(0,0,0,0.6);
+      --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+      --header-bg: rgba(11,14,23,0.6);
+      --logo-text-color: #f0f2f8;
+    }
+    [data-theme="light"] {
+      --bg: #f0f3fa;
+      --surface: #ffffff;
+      --card: #ffffff;
+      --card-hover: #eef2ff;
+      --border: rgba(0,0,0,0.06);
+      --border-light: rgba(0,0,0,0.08);
+      --text: #0f1424;
+      --text-secondary: #3d435a;
+      --text-dim: #7a829c;
+      --shadow-card: 0 20px 40px -12px rgba(0,0,0,0.12);
+      --header-bg: rgba(255,255,255,0.75);
+      --logo-text-color: #0f1424;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      transition: background 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-:root {
-  --ink: #0b0d14;
-  --surface: #10121c;
-  --panel: #161927;
-  --line: rgba(255,255,255,0.07);
-  --line-hi: rgba(99,179,255,0.25);
-  --white: #ffffff;
-  --muted: #7a8499;
-  --dim: #4a5168;
-  --blue: #4a9eff;
-  --blue-deep: #1a6fff;
-  --blue-glow: rgba(74,158,255,0.18);
-  --teal: #00d4c8;
-  --violet: #8b6fff;
-  --gold: #f5b94a;
-  --r-sm: 12px;
-  --r-md: 18px;
-  --r-lg: 24px;
-  --r-xl: 32px;
-  --t: 0.28s cubic-bezier(0.4,0,0.2,1);
-  --font-display: 'Syne', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
-}
+    /* ===== HEADER GLASS ===== */
+    header {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 1280px;
+      z-index: 1000;
+      background: var(--header-bg);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border: 1px solid var(--border);
+      border-radius: 80px;
+      padding: 0 28px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.15);
+    }
+    [data-theme="light"] header {
+      background: rgba(255,255,255,0.75);
+      border-color: rgba(255,255,255,0.3);
+      box-shadow: 0 4px 40px rgba(0,0,0,0.05);
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--logo-text-color); font-weight: 800; font-size: 1.2rem; letter-spacing: -0.02em; transition: color 0.3s; }
+    .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #1ea5ff, #5b56ff); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; }
+    .logo-icon svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2.5; }
+    .logo span { color: var(--logo-text-color); transition: color 0.3s; }
+    .nav { display: flex; align-items: center; gap: 32px; }
+    .nav a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; letter-spacing: -0.01em; position: relative; }
+    .nav a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--accent); transition: width 0.25s; }
+    .nav a:hover { color: var(--text); }
+    .nav a:hover::after { width: 100%; }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .lang-toggle, .theme-toggle {
+      background: transparent; border: none; color: var(--text-secondary); font-size: 0.8rem; font-weight: 600; cursor: pointer; padding: 6px 10px; border-radius: 40px; transition: all 0.2s; display: flex; align-items: center; gap: 4px;
+    }
+    .lang-toggle:hover, .theme-toggle:hover { background: var(--border); color: var(--text); }
+    .lang-toggle svg, .theme-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .btn-primary {
+      background: var(--accent); color: #fff; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: background 0.25s, transform 0.2s, box-shadow 0.25s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    }
+    [data-theme="dark"] .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 8px 28px var(--accent-glow); }
+    [data-theme="light"] .btn-primary:hover { background: #0d8ae0; transform: translateY(-1px); box-shadow: 0 8px 28px rgba(30,165,255,0.25); }
+    .btn-outline { background: transparent; border: 1px solid var(--border-light); color: var(--text); padding: 10px 24px; border-radius: 40px; font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: background 0.25s, border-color 0.25s, color 0.25s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+    [data-theme="dark"] .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: var(--text-secondary); }
+    [data-theme="light"] .btn-outline:hover { background: rgba(0,0,0,0.04); border-color: var(--text-secondary); }
+    .btn-ghost { background: var(--border); color: var(--text); border: none; padding: 10px 24px; border-radius: 40px; font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: background 0.25s, color 0.25s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+    [data-theme="dark"] .btn-ghost:hover { background: rgba(255,255,255,0.12); }
+    [data-theme="light"] .btn-ghost:hover { background: rgba(0,0,0,0.08); }
+    .burger { display: none; flex-direction: column; gap: 5px; background: transparent; border: none; cursor: pointer; padding: 6px; }
+    .burger span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: 0.2s; }
 
-html { scroll-behavior: smooth }
-body {
-  font-family: var(--font-body);
-  background: var(--ink);
-  color: var(--white);
-  line-height: 1.6;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  position: relative;
-}
+    /* ===== HERO ===== */
+    .hero { padding: 140px 0 60px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -120px; left: -10%; width: 70%; height: 500px; background: radial-gradient(ellipse, rgba(30,165,255,0.08), transparent 70%); pointer-events: none; }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; position: relative; z-index: 2; }
+    .hero h1 { font-size: clamp(2.8rem, 5.2vw, 4rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 20px; }
+    .hero h1 span { background: linear-gradient(135deg, var(--accent), #5b56ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 480px; line-height: 1.7; margin-bottom: 32px; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 48px; }
+    .hero-stats { display: flex; gap: 48px; border-top: 1px solid var(--border); padding-top: 32px; flex-wrap: wrap; }
+    .stat-item .num { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em; }
+    .stat-item .label { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
 
-/* ─── SCROLLBAR ─── */
-::-webkit-scrollbar { width: 5px }
-::-webkit-scrollbar-track { background: var(--ink) }
-::-webkit-scrollbar-thumb { background: var(--blue-deep); border-radius: 3px }
+    /* ===== PROMO TILES (вместо мокапа) ===== */
+    .promo-tiles-hero { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+    .promo-tile-hero {
+      padding: 28px 32px;
+      border-radius: var(--radius);
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      transition: filter 0.3s, transform 0.2s;
+      min-height: 110px;
+      width: 100%;
+    }
+    .promo-tile-hero:hover { filter: brightness(0.92); transform: scale(1.01); }
+    .promo-tile-hero.orange { background: linear-gradient(135deg, #ff7e29, #ffb319); }
+    .promo-tile-hero.blue { background: linear-gradient(135deg, #1a6eff, #1ea5ff); }
+    .promo-tile-hero .icon { 
+      width: 56px; 
+      height: 56px; 
+      background: rgba(255,255,255,0.18); 
+      border-radius: 16px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      flex-shrink: 0; 
+    }
+    .promo-tile-hero .icon svg { width: 28px; height: 28px; stroke: #fff; stroke-width: 2; fill: none; }
+    .promo-tile-hero .text { display: flex; flex-direction: column; gap: 2px; }
+    .promo-tile-hero .text h3 { font-size: 1.25rem; font-weight: 700; line-height: 1.2; margin: 0; color: #fff; }
+    .promo-tile-hero .text p { font-size: 0.92rem; opacity: 0.9; margin: 0; max-width: 320px; line-height: 1.4; color: #fff; }
 
-/* ─── NOISE OVERLAY ─── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.018;
-  pointer-events: none;
-  z-index: 9999;
-}
+    /* ===== SECTIONS ===== */
+    section { padding: 80px 0; }
+    .section-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px; }
+    .section-title { font-size: clamp(1.8rem, 3.4vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 16px; }
+    .section-title span { background: linear-gradient(135deg, var(--accent), #5b56ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .section-sub { color: var(--text-secondary); font-size: 1rem; max-width: 560px; line-height: 1.7; }
+    .section-head { margin-bottom: 48px; }
+    .section-head.centered { text-align: center; }
+    .section-head.centered .section-sub { margin: 0 auto; }
 
-/* ─── LAYOUT ─── */
-.wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px }
+    /* ===== TIMELINE ===== */
+    .timeline { display: flex; flex-direction: column; gap: 0; position: relative; padding-left: 20px; }
+    .timeline::before { content: ''; position: absolute; left: 8px; top: 40px; bottom: 40px; width: 2px; background: linear-gradient(180deg, var(--accent), transparent); }
+    .timeline-item { display: grid; grid-template-columns: 48px 1fr; gap: 24px; padding: 20px 0; position: relative; }
+    .timeline-number { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; flex-shrink: 0; box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--accent-glow); }
+    .timeline-content { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 32px; transition: border-color 0.3s, box-shadow 0.3s; }
+    .timeline-content:hover { border-color: var(--accent); box-shadow: 0 12px 40px -12px var(--accent-glow); }
+    .timeline-content h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+    .timeline-content p { color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; }
 
-/* ─── HEADER ─── */
-header {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 900;
-  padding: 0;
-  transition: background var(--t), box-shadow var(--t);
-}
-header.stuck {
-  background: rgba(11,13,20,0.92);
-  backdrop-filter: blur(24px);
-  box-shadow: 0 1px 0 var(--line);
-}
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 68px;
-}
+    /* ===== FEATURES ===== */
+    .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .feat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; transition: border-color 0.3s, box-shadow 0.3s; position: relative; overflow: hidden; }
+    .feat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.3s; }
+    .feat-card:hover { border-color: var(--accent); box-shadow: 0 16px 48px -12px rgba(30,165,255,0.12); }
+    .feat-card:hover::before { opacity: 1; }
+    .feat-card .icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+    .feat-card .icon.blue { background: rgba(30,165,255,0.12); color: var(--accent); }
+    .feat-card .icon.green { background: rgba(52,211,153,0.12); color: #34d399; }
+    .feat-card .icon.gold { background: rgba(245,185,74,0.12); color: #f5b94a; }
+    .feat-card .icon.orange { background: rgba(255,138,61,0.12); color: #ff8a3d; }
+    .feat-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
+    .feat-card p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  text-decoration: none;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--white);
-  letter-spacing: -0.4px;
-}
-.logo-icon {
-  width: 36px; height: 36px;
-  background: linear-gradient(135deg, var(--blue-deep), var(--blue));
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.logo-text em { font-style: normal; color: var(--blue) }
+    /* ===== TRUST BANNER ===== */
+    .trust-banner { background: linear-gradient(135deg, #1a6eff, #1ea5ff); border-radius: var(--radius); padding: 48px 56px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center; color: #fff; position: relative; overflow: hidden; }
+    .trust-banner::after { content: ''; position: absolute; right: -60px; top: -60px; width: 400px; height: 400px; background: rgba(255,255,255,0.04); border-radius: 50%; }
+    .trust-banner h2 { font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .trust-banner p { opacity: 0.9; font-size: 0.95rem; line-height: 1.7; max-width: 440px; margin-bottom: 24px; }
+    .trust-banner .btn-outline { border-color: rgba(255,255,255,0.3); color: #fff; }
+    .trust-banner .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: #fff; }
+    .trust-banner .stats { display: flex; gap: 40px; margin-top: 24px; }
+    .trust-banner .stats .num { font-size: 1.8rem; font-weight: 800; }
+    .trust-banner .stats .label { font-size: 0.8rem; opacity: 0.8; }
+    .trust-banner .mascot { display: flex; justify-content: center; align-items: flex-end; height: 100%; }
+    .trust-banner .mascot img { 
+      max-height: 420px; 
+      width: 100%; 
+      transform: translateY(25px);
+      object-fit: contain; 
+    }
 
-nav { display: flex; align-items: center; gap: 36px }
-nav a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: color var(--t);
-}
-nav a:hover { color: var(--white) }
+    /* ===== REVIEWS ===== */
+    .reviews-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .review-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: border-color 0.3s, box-shadow 0.3s; }
+    .review-card:hover { border-color: var(--accent); box-shadow: 0 12px 32px -12px rgba(30,165,255,0.08); }
+    .review-card .stars { display: flex; gap: 4px; margin-bottom: 12px; }
+    .review-card .stars svg { width: 18px; height: 18px; fill: #f5b94a; }
+    .review-card blockquote { font-size: 0.92rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 18px; }
+    .review-author { display: flex; align-items: center; gap: 12px; }
+    .review-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .review-name { font-weight: 600; font-size: 0.9rem; }
+    .review-role { font-size: 0.75rem; color: var(--text-dim); }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.875rem;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  transition: all var(--t);
-  white-space: nowrap;
-}
-.btn-primary {
-  padding: 10px 22px;
-  background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue) 100%);
-  color: #fff;
-  border-radius: 50px;
-  box-shadow: 0 4px 18px rgba(26,111,255,0.35);
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(26,111,255,0.5);
-}
-.btn-ghost {
-  padding: 10px 20px;
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--line);
-  border-radius: 50px;
-}
-.btn-ghost:hover { color: var(--white); border-color: var(--line-hi) }
+    /* ===== FAQ ===== */
+    .faq-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 48px; text-align: center; }
+    .faq-list { max-width: 700px; margin: 32px auto 0; text-align: left; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 16px 0; }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 1rem; cursor: pointer; padding: 4px 0; transition: color 0.2s; }
+    .faq-q:hover { color: var(--accent); }
+    .faq-q svg { transition: transform 0.3s; flex-shrink: 0; color: var(--text-dim); }
+    .faq-item.open .faq-q svg { transform: rotate(180deg); color: var(--accent); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease; }
+    .faq-item.open .faq-a { max-height: 160px; padding-top: 12px; }
+    .faq-a p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; }
 
-/* ─── HERO ─── */
-.hero {
-  padding: 160px 0 100px;
-  position: relative;
-  overflow: hidden;
-}
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.hero-bg-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-}
-.orb1 {
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(26,111,255,0.1) 0%, transparent 70%);
-  top: -150px; right: -100px;
-}
-.orb2 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(139,111,255,0.08) 0%, transparent 70%);
-  bottom: -80px; left: -80px;
-}
-.orb3 {
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(0,212,200,0.06) 0%, transparent 70%);
-  top: 40%; left: 40%;
-}
+    /* ===== CTA ===== */
+    .cta-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 64px 48px; text-align: center; position: relative; overflow: hidden; }
+    .cta-box::before { content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 600px; height: 300px; background: radial-gradient(ellipse, var(--accent-glow), transparent 70%); opacity: 0.3; animation: pulse-glow 4s ease-in-out infinite; }
+    @keyframes pulse-glow { 0%,100% { opacity: 0.2; transform: translateX(-50%) scale(1); } 50% { opacity: 0.4; transform: translateX(-50%) scale(1.1); } }
+    .cta-box h2 { font-size: clamp(1.8rem, 3.2vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px; position: relative; }
+    .cta-box p { color: var(--text-secondary); max-width: 480px; margin: 0 auto 32px; font-size: 1rem; position: relative; }
+    .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; }
+    .cta-warning { margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); position: relative; }
+    .cta-warning strong { color: var(--accent); }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: center;
-  position: relative;
-  z-index: 2;
-}
+    /* ===== FOOTER ===== */
+    footer { border-top: 1px solid var(--border); padding: 60px 0 32px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
+    .footer-brand p { color: var(--text-secondary); font-size: 0.85rem; max-width: 300px; line-height: 1.7; margin-top: 12px; }
+    .footer-col h4 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 16px; }
+    .footer-col a { display: block; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; padding: 6px 0; transition: color 0.2s; cursor: pointer; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; color: var(--text-dim); }
 
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: rgba(74,158,255,0.1);
-  border: 1px solid rgba(74,158,255,0.2);
-  border-radius: 50px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--blue);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: 24px;
-}
-.eyebrow-dot {
-  width: 6px; height: 6px;
-  background: var(--blue);
-  border-radius: 50%;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-@keyframes pulse-dot {
-  0%,100%{opacity:1;transform:scale(1)}
-  50%{opacity:0.5;transform:scale(0.7)}
-}
+    /* ===== MODALS ===== */
+    .modal-overlay { 
+      position: fixed; 
+      inset: 0; 
+      background: rgba(0,0,0,0.6); 
+      backdrop-filter: blur(16px); 
+      z-index: 9999; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 24px; 
+      opacity: 0; 
+      pointer-events: none; 
+      transition: opacity 0.35s; 
+    }
+    .modal-overlay.open { 
+      opacity: 1; 
+      pointer-events: all; 
+    }
+    .modal { 
+      background: var(--surface); 
+      border: 1px solid var(--border); 
+      border-radius: var(--radius); 
+      max-width: 720px; 
+      width: 100%; 
+      max-height: 85vh; 
+      display: flex;
+      flex-direction: column;
+      padding: 40px; 
+      transform: translateY(24px) scale(0.96); 
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); 
+      overflow: hidden;
+    }
+    .modal-overlay.open .modal { 
+      transform: translateY(0) scale(1); 
+    }
+    .modal-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: flex-start; 
+      margin-bottom: 24px; 
+      flex-shrink: 0;
+    }
+    .modal-header h2 { 
+      font-size: 1.4rem; 
+      font-weight: 700; 
+    }
+    .modal-header p { 
+      color: var(--text-dim); 
+      font-size: 0.85rem; 
+      margin-top: 4px; 
+    }
+    .modal-close { 
+      background: var(--border); 
+      border: none; 
+      color: var(--text); 
+      width: 36px; 
+      height: 36px; 
+      border-radius: 50%; 
+      font-size: 1.2rem; 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      transition: 0.2s; 
+      flex-shrink: 0;
+    }
+    .modal-close:hover { 
+      background: var(--border-light); 
+      transform: rotate(90deg); 
+    }
+    .modal-body { 
+      overflow-y: auto; 
+      flex: 1;
+      padding-right: 4px;
+      scrollbar-width: thin;
+    }
+    .modal-body::-webkit-scrollbar { width: 4px; }
+    .modal-body::-webkit-scrollbar-track { background: transparent; }
+    .modal-body::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+    .modal-body h3 { 
+      font-size: 1rem; 
+      font-weight: 700; 
+      color: var(--accent); 
+      margin: 24px 0 8px; 
+    }
+    .modal-body p, .modal-body li { 
+      color: var(--text-secondary); 
+      font-size: 0.9rem; 
+      line-height: 1.7; 
+      margin-bottom: 6px; 
+    }
+    .modal-body ul { 
+      list-style: none; 
+      padding: 0; 
+    }
+    .modal-body ul li::before { 
+      content: '—'; 
+      color: var(--accent); 
+      margin-right: 8px; 
+    }
 
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.4rem, 5vw, 3.8rem);
-  font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -1.5px;
-  margin-bottom: 20px;
-}
-.hero-title .grad {
-  background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 50%, var(--violet) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+    /* ===== ANIMATIONS ===== */
+    .fade-up { opacity: 0; transform: translateY(36px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+    .fade-up.in { opacity: 1; transform: translateY(0); }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+    .floating { animation: float 6s ease-in-out infinite; }
 
-.hero-desc {
-  font-size: 1.05rem;
-  color: var(--muted);
-  max-width: 480px;
-  margin-bottom: 36px;
-  line-height: 1.75;
-}
+    /* ===== PEEKING PETS ===== */
+    .peeking-pets { position: fixed; bottom: 0; right: 4%; display: flex; align-items: flex-end; gap: 12px; z-index: 999; pointer-events: none; }
+    .peeking-pets img { width: 80px; height: auto; object-fit: contain; pointer-events: auto; cursor: pointer; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5)); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .peeking-pets img:nth-child(1) { transform: rotate(-12deg) translateY(24px); }
+    .peeking-pets img:nth-child(2) { transform: rotate(6deg) translateY(28px); }
+    .peeking-pets img:nth-child(3) { transform: rotate(-4deg) translateY(20px); }
+    .peeking-pets img:hover { transform: rotate(0deg) translateY(-18px) scale(1.3); z-index: 10; pointer-events: all; }
 
-.hero-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap }
-.hero-actions .btn-primary { padding: 13px 28px; font-size: 0.93rem }
-.hero-actions .btn-ghost { padding: 12px 22px; font-size: 0.9rem; color: var(--muted) }
-
-.hero-stats {
-  display: flex;
-  gap: 36px;
-  margin-top: 52px;
-  padding-top: 36px;
-  border-top: 1px solid var(--line);
-}
-.stat-val {
-  font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 800;
-  color: var(--white);
-  letter-spacing: -0.5px;
-}
-.stat-label { font-size: 0.78rem; color: var(--dim); margin-top: 2px }
-
-/* HERO VISUAL */
-.hero-visual {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.hero-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r-xl);
-  padding: 28px;
-  width: 100%;
-  max-width: 380px;
-  position: relative;
-  overflow: hidden;
-}
-.hero-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--blue), transparent);
-}
-.hc-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 22px;
-}
-.hc-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--teal);
-}
-.hc-status-dot {
-  width: 7px; height: 7px;
-  background: var(--teal);
-  border-radius: 50%;
-  box-shadow: 0 0 8px var(--teal);
-}
-.hc-id { font-size: 0.72rem; color: var(--dim); font-family: monospace }
-.hc-nft {
-  background: linear-gradient(135deg, #1a1f35, #1e1530);
-  border: 1px solid rgba(139,111,255,0.2);
-  border-radius: var(--r-md);
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 18px;
-}
-.hc-nft-icon {
-  width: 52px; height: 52px;
-  background: linear-gradient(135deg, var(--violet), var(--blue-deep));
-  border-radius: var(--r-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.hc-nft-name { font-size: 0.88rem; font-weight: 600; margin-bottom: 3px }
-.hc-nft-sub { font-size: 0.73rem; color: var(--dim) }
-.hc-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
-}
-.hc-row:last-of-type { border-bottom: none }
-.hc-row-label { font-size: 0.8rem; color: var(--muted) }
-.hc-row-val { font-size: 0.85rem; font-weight: 600 }
-.hc-row-val.green { color: var(--teal) }
-.hc-row-val.blue { color: var(--blue) }
-.hc-btn {
-  width: 100%;
-  margin-top: 18px;
-  padding: 13px;
-  background: linear-gradient(135deg, var(--blue-deep), var(--blue));
-  border: none;
-  border-radius: var(--r-sm);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  text-align: center;
-  transition: all var(--t);
-  box-shadow: 0 4px 20px rgba(26,111,255,0.3);
-}
-.hc-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(26,111,255,0.45) }
-
-/* ─── SECTION SHARED ─── */
-section { padding: 96px 0 }
-.section-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--blue);
-  margin-bottom: 14px;
-}
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-  font-weight: 800;
-  letter-spacing: -0.7px;
-  line-height: 1.15;
-  margin-bottom: 16px;
-}
-.section-title .grad {
-  background: linear-gradient(135deg, var(--blue), var(--teal));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.section-sub {
-  color: var(--muted);
-  font-size: 1rem;
-  max-width: 560px;
-  line-height: 1.7;
-}
-.section-head { margin-bottom: 56px }
-.section-head.centered { text-align: center }
-.section-head.centered .section-sub { margin: 0 auto }
-
-/* ─── HOW IT WORKS ─── */
-.how-section { background: var(--surface) }
-.steps-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2px;
-  background: var(--line);
-  border-radius: var(--r-xl);
-  overflow: hidden;
-}
-.step-item {
-  background: var(--surface);
-  padding: 36px 28px;
-  position: relative;
-  transition: background var(--t);
-}
-.step-item:hover { background: var(--panel) }
-.step-num {
-  font-family: var(--font-display);
-  font-size: 3rem;
-  font-weight: 800;
-  color: rgba(74,158,255,0.09);
-  line-height: 1;
-  margin-bottom: 16px;
-}
-.step-ico {
-  width: 44px; height: 44px;
-  background: var(--blue-glow);
-  border-radius: var(--r-sm);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 16px;
-}
-.step-item h3 {
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.step-item p { font-size: 0.85rem; color: var(--muted); line-height: 1.65 }
-
-/* ─── FEATURES ─── */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-.feat-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  padding: 32px;
-  transition: all var(--t);
-  position: relative;
-  overflow: hidden;
-}
-.feat-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--blue-deep), var(--teal));
-  transform: scaleX(0);
-  transition: transform var(--t);
-}
-.feat-card:hover { border-color: var(--line-hi); transform: translateY(-3px) }
-.feat-card:hover::after { transform: scaleX(1) }
-.feat-ico {
-  width: 50px; height: 50px;
-  border-radius: var(--r-sm);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px;
-}
-.ico-blue { background: rgba(74,158,255,0.1) }
-.ico-teal { background: rgba(0,212,200,0.1) }
-.ico-violet { background: rgba(139,111,255,0.1) }
-.ico-gold { background: rgba(245,185,74,0.1) }
-.ico-green { background: rgba(52,211,153,0.1) }
-.ico-pink { background: rgba(236,72,153,0.1) }
-
-.feat-card h3 {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.feat-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.7 }
-
-/* ─── TRUST BELT ─── */
-.trust-section { padding: 56px 0 }
-.trust-inner {
-  background: linear-gradient(135deg, rgba(26,111,255,0.08), rgba(0,212,200,0.05));
-  border: 1px solid rgba(74,158,255,0.15);
-  border-radius: var(--r-xl);
-  padding: 48px 56px;
-  display: flex;
-  align-items: center;
-  gap: 60px;
-}
-.trust-left { flex: 0 0 auto }
-.trust-badge {
-  width: 72px; height: 72px;
-  background: linear-gradient(135deg, var(--blue-deep), var(--teal));
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-}
-.trust-right { flex: 1 }
-.trust-right h2 {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 6px;
-}
-.trust-right p { font-size: 0.9rem; color: var(--muted) }
-.trust-stats {
-  flex: 0 0 auto;
-  display: flex;
-  gap: 48px;
-}
-.trust-stat-val {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--blue);
-}
-.trust-stat-label { font-size: 0.78rem; color: var(--dim) }
-
-/* ─── TESTIMONIALS ─── */
-.reviews-section { background: var(--surface) }
-.reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-.review-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  padding: 28px;
-  transition: border-color var(--t);
-}
-.review-card:hover { border-color: var(--line-hi) }
-.review-stars { color: var(--gold); font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 14px }
-.review-card blockquote {
-  font-size: 0.9rem;
-  color: #c0c8d8;
-  line-height: 1.75;
-  margin-bottom: 20px;
-}
-.review-author { display: flex; align-items: center; gap: 12px }
-.review-av {
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: #fff;
-  flex-shrink: 0;
-}
-.review-name { font-size: 0.875rem; font-weight: 600 }
-.review-role { font-size: 0.75rem; color: var(--dim) }
-
-/* ─── CTA ─── */
-.cta-section { padding: 0 0 96px }
-.cta-box {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r-xl);
-  padding: 72px 56px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.cta-box::before {
-  content: '';
-  position: absolute;
-  top: -100px; left: 50%; transform: translateX(-50%);
-  width: 600px; height: 300px;
-  background: radial-gradient(ellipse, rgba(26,111,255,0.1), transparent 70%);
-  pointer-events: none;
-}
-.cta-box h2 {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -1px;
-  margin-bottom: 16px;
-}
-.cta-box p { color: var(--muted); font-size: 1rem; max-width: 480px; margin: 0 auto 36px }
-.cta-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap }
-.cta-actions .btn-primary { padding: 14px 32px; font-size: 0.95rem }
-.cta-actions .btn-ghost { padding: 13px 26px }
-.cta-warning {
-  margin-top: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  color: var(--dim);
-}
-.cta-warning strong { color: var(--gold) }
-
-/* ─── FOOTER ─── */
-footer {
-  border-top: 1px solid var(--line);
-  padding: 56px 0 36px;
-}
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2.5fr 1fr 1fr;
-  gap: 60px;
-  margin-bottom: 48px;
-}
-.footer-brand p {
-  font-size: 0.85rem;
-  color: var(--muted);
-  max-width: 300px;
-  margin-top: 12px;
-  line-height: 1.7;
-}
-.footer-col h4 {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--dim);
-  margin-bottom: 16px;
-}
-.footer-col a {
-  display: block;
-  font-size: 0.875rem;
-  color: var(--muted);
-  text-decoration: none;
-  padding: 5px 0;
-  transition: color var(--t);
-  cursor: pointer;
-}
-.footer-col a:hover { color: var(--white) }
-.footer-bottom {
-  border-top: 1px solid var(--line);
-  padding-top: 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.footer-bottom p { font-size: 0.78rem; color: var(--dim) }
-.footer-tg {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color var(--t);
-}
-.footer-tg:hover { color: var(--blue) }
-
-/* ─── MODALS ─── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(8px);
-  z-index: 9000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s ease;
-}
-.modal-overlay.open { opacity: 1; pointer-events: all }
-.modal {
-  background: var(--panel);
-  border: 1px solid var(--line-hi);
-  border-radius: var(--r-xl);
-  width: 100%;
-  max-width: 780px;
-  max-height: 85vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transform: translateY(20px);
-  transition: transform 0.25s ease;
-}
-.modal-overlay.open .modal { transform: translateY(0) }
-.modal-header {
-  padding: 28px 32px 20px;
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-.modal-header h2 {
-  font-family: var(--font-display);
-  font-size: 1.3rem;
-  font-weight: 800;
-}
-.modal-header p { font-size: 0.8rem; color: var(--dim); margin-top: 4px }
-.modal-close {
-  width: 34px; height: 34px;
-  background: rgba(255,255,255,0.05);
-  border: none;
-  border-radius: 8px;
-  color: var(--muted);
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all var(--t);
-  flex-shrink: 0;
-  margin-left: 20px;
-}
-.modal-close:hover { background: rgba(255,255,255,0.1); color: var(--white) }
-.modal-body {
-  padding: 28px 32px;
-  overflow-y: auto;
-  flex: 1;
-}
-.modal-body::-webkit-scrollbar { width: 4px }
-.modal-body::-webkit-scrollbar-thumb { background: var(--blue-deep); border-radius: 2px }
-
-.doc-section { margin-bottom: 32px }
-.doc-section h3 {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--blue);
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-}
-.doc-section p, .doc-section li {
-  font-size: 0.86rem;
-  color: #9aabbd;
-  line-height: 1.8;
-  margin-bottom: 8px;
-}
-.doc-section li { margin-left: 16px }
-.doc-section ul { list-style: none; padding: 0 }
-.doc-section ul li::before { content: '—'; color: var(--blue); margin-right: 8px }
-
-/* ─── PEEKING PETS (ЗВЕРУШКИ) ─── */
-.peeking-pets {
-  position: fixed;
-  bottom: 0;
-  right: 5%;
-  display: flex;
-  align-items: flex-end;
-  gap: 15px;
-  z-index: 1000;
-  pointer-events: none;
-}
-.peeking-pets img {
-  width: 90px;
-  height: auto;
-  object-fit: contain;
-  pointer-events: auto;
-  cursor: pointer;
-  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.peeking-pets img:nth-child(1) { transform: rotate(-15deg) translateY(30px); }
-.peeking-pets img:nth-child(2) { transform: rotate(8deg) translateY(35px); }
-.peeking-pets img:nth-child(3) { transform: rotate(-5deg) translateY(25px); }
-
-.peeking-pets img:hover {
-  transform: rotate(0deg) translateY(-15px) scale(1.3);
-  z-index: 10;
-}
-
-/* ─── ANIMATIONS ─── */
-.fade-up {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-.fade-up.in { opacity: 1; transform: translateY(0) }
-.fade-up:nth-child(2) { transition-delay: 0.08s }
-.fade-up:nth-child(3) { transition-delay: 0.16s }
-.fade-up:nth-child(4) { transition-delay: 0.24s }
-.fade-up:nth-child(5) { transition-delay: 0.32s }
-.fade-up:nth-child(6) { transition-delay: 0.4s }
-
-/* ─── MOBILE MENU ─── */
-.burger {
-  display: none;
-  width: 38px; height: 38px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  cursor: pointer;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-}
-.burger span {
-  display: block;
-  width: 18px; height: 1.5px;
-  background: var(--muted);
-  transition: all var(--t);
-}
-
-/* ─── RESPONSIVE ─── */
-@media(max-width:1024px){
-  .features-grid{grid-template-columns:repeat(2,1fr)}
-  .steps-grid{grid-template-columns:repeat(2,1fr)}
-  .trust-inner{flex-wrap:wrap;gap:32px;padding:36px}
-  .trust-stats{gap:32px}
-}
-@media(max-width:768px){
-  .hero-grid{grid-template-columns:1fr;gap:48px}
-  .hero-visual{order:-1}
-  .hero-card{max-width:100%}
-  .hero-stats{gap:24px;flex-wrap:wrap}
-  nav{display:none}
-  .burger{display:flex}
-  .features-grid{grid-template-columns:1fr}
-  .reviews-grid{grid-template-columns:1fr}
-  .footer-grid{grid-template-columns:1fr;gap:36px}
-  .cta-box{padding:48px 28px}
-  .trust-inner{padding:32px 24px}
-  .trust-stats{gap:24px}
-  .section-head{margin-bottom:40px}
-  section{padding:72px 0}
-}
-@media(max-width:480px){
-  .wrap{padding:0 18px}
-  .hero{padding:120px 0 72px}
-  .steps-grid{grid-template-columns:1fr}
-  .hero-title{font-size:2.1rem}
-  .modal-header,.modal-body{padding:20px}
-}
-</style>
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .promo-tiles-hero { order: -1; flex-direction: row; flex-wrap: wrap; margin-top: 0; }
+      .promo-tile-hero { flex: 1; min-width: 200px; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .reviews-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .trust-banner { grid-template-columns: 1fr; text-align: center; }
+      .trust-banner p { margin: 0 auto 24px; }
+      .trust-banner .stats { justify-content: center; }
+      .trust-banner .mascot { order: -1; margin-bottom: 20px; }
+      .trust-banner .mascot img { max-height: 140px; }
+    }
+    @media (max-width: 768px) {
+      header { height: 64px; padding: 0 16px; border-radius: 40px; top: 12px; width: calc(100% - 16px); }
+      .nav { display: none; }
+      .burger { display: flex; }
+      .header-actions .lang-toggle, .header-actions .theme-toggle { font-size: 0.7rem; padding: 4px 8px; }
+      .hero { padding: 120px 0 40px; }
+      .hero-stats { gap: 24px; }
+      .promo-tiles-hero { flex-direction: column; margin-top: 12px; }
+      .promo-tile-hero { min-width: unset; padding: 24px 28px; }
+      .promo-tile-hero .text h3 { font-size: 1.1rem; }
+      .promo-tile-hero .text p { font-size: 0.85rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .cta-box { padding: 40px 24px; }
+      .faq-box { padding: 32px 20px; }
+      .trust-banner { padding: 32px 24px; }
+      .timeline-item { grid-template-columns: 1fr; gap: 12px; }
+      .timeline::before { display: none; }
+      .modal { padding: 24px; max-height: 90vh; }
+      .peeking-pets { display: none; }
+    }
+    @media (max-width: 480px) {
+      .wrap { padding: 0 16px; }
+      .hero h1 { font-size: 2.2rem; }
+      .hero-actions .btn-primary, .hero-actions .btn-outline { width: 100%; justify-content: center; }
+      .stat-item .num { font-size: 1.6rem; }
+    }
+  </style>
 </head>
 <body>
-
-<header id="header">
-  <div class="wrap header-inner">
-    <a href="#" class="logo" id="logoLink">
-      <div class="logo-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" fill="white" opacity="0.9"/>
-          <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <span class="logo-text">Escrow <em>Trust</em></span>
+  <!-- HEADER -->
+  <header>
+    <a href="#" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/><path d="M9 12l2 2 4-4" stroke="white" stroke-width="2"/></svg></div>
+      <span>TrustEscrow</span>
     </a>
-    <nav id="mainNav">
-      <a href="#how">Как работает</a>
-      <a href="#features">Безопасность</a>
-      <a href="#reviews">Отзывы</a>
-      <a href="#support">Поддержка</a>
-    </nav>
-    <div style="display:flex;gap:10px;align-items:center">
-      <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.2l-2.02 9.52c-.15.68-.54.84-1.08.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.6.3l.21-3.04 5.5-4.97c.24-.21-.05-.33-.37-.12L6.6 14.37l-2.93-.92c-.64-.2-.65-.64.13-.95l11.44-4.41c.53-.19 1 .13.82.94l-.5.17z"/></svg>
-        Открыть бота
-      </a>
-      <button class="burger" id="burger" aria-label="Меню">
-        <span></span><span></span><span></span>
+    <div class="nav" id="mainNav">
+      <a href="#how" data-i18n="navHow">Как работает</a>
+      <a href="#features" data-i18n="navSecurity">Безопасность</a>
+      <a href="#reviews" data-i18n="navReviews">Отзывы</a>
+      <a href="#faq" data-i18n="navFaq">FAQ</a>
+    </div>
+    <div class="header-actions">
+      <button class="lang-toggle" id="langToggle" aria-label="Switch language">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span id="langLabel">RU</span>
       </button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" id="themeIcon"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+      <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn-primary" data-i18n="openBot">Открыть бота</a>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
-  </div>
-</header>
+  </header>
 
-<main>
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="home">
+      <div class="wrap hero-grid">
+        <div>
+          <h1 data-i18n="heroTitle">Безопасные сделки <br><span>в Telegram</span></h1>
+          <p data-i18n="heroDesc">Покупатель переводит деньги — бот блокирует средства — вы передаёте NFT-подарок — получаете оплату. Без риска и обмана.</p>
+          <div class="hero-actions">
+            <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn-primary" data-i18n="btnStart">Начать сделку</a>
+            <a href="#how" class="btn-outline" data-i18n="btnHow">Как работает</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item"><div class="num" data-count="12000">12K+</div><div class="label" data-i18n="statDeals">Сделок проведено</div></div>
+            <div class="stat-item"><div class="num">99.9%</div><div class="label" data-i18n="statSuccess">Успешных</div></div>
+            <div class="stat-item"><div class="num">24/7</div><div class="label" data-i18n="statSupport">Поддержка</div></div>
+            <div class="stat-item"><div class="num">0%</div><div class="label" data-i18n="statFraud">Мошенничества</div></div>
+          </div>
+        </div>
+        <!-- PROMO TILES вместо мокапа -->
+        <div class="promo-tiles-hero">
+          <a href="#features" class="promo-tile-hero orange">
+            <div class="icon">
+              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <div class="text">
+              <h3 data-i18n="tileArbitrationTitle">Арбитраж 24/7</h3>
+              <p data-i18n="tileArbitrationDesc">Независимая проверка спорных сделок в любое время</p>
+            </div>
+          </a>
+          <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="promo-tile-hero blue">
+            <div class="icon">
+              <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </div>
+            <div class="text">
+              <h3 data-i18n="tileBotTitle">Escrow Trust Bot</h3>
+              <p data-i18n="tileBotDesc">Проводите сделки не выходя из Telegram</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
 
-<section class="hero" id="home">
-  <div class="hero-bg">
-    <div class="hero-bg-orb orb1"></div>
-    <div class="hero-bg-orb orb2"></div>
-    <div class="hero-bg-orb orb3"></div>
-  </div>
-  <div class="wrap hero-grid">
-    <div class="hero-content">
-      <div class="hero-eyebrow">
-        <div class="eyebrow-dot"></div>
-      </div>
-      <h1 class="hero-title">
-        Безопасные сделки с<br>
-        <span class="grad">NFT-подарками</span>
-      </h1>
-      <p class="hero-desc">
-        Покупатель переводит деньги — бот блокирует средства — вы передаёте подарок — получаете деньги. Без обмана. Без риска.
-      </p>
-      <div class="hero-actions">
-        <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-          Начать сделку
-        </a>
-        <a href="https://t.me/SupEscrow" target="_blank" class="btn btn-ghost">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Поддержка
-        </a>
-      </div>
-      <div class="hero-stats">
-        <div>
-          <div class="stat-val">10K+</div>
-          <div class="stat-label">Сделок проведено</div>
+    <!-- HOW IT WORKS -->
+    <section id="how">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-label" data-i18n="processLabel">Процесс</div>
+          <h2 class="section-title" data-i18n="processTitle">Как работает <span>TrustEscrow</span></h2>
+          <p class="section-sub" data-i18n="processSub">Четыре простых шага до безопасной сделки.</p>
         </div>
-        <div>
-          <div class="stat-val">98%</div>
-          <div class="stat-label">Успешных завершений</div>
-        </div>
-        <div>
-          <div class="stat-val">~5 мин</div>
-          <div class="stat-label">До выплаты</div>
+        <div class="timeline">
+          <div class="timeline-item fade-up"><div class="timeline-number">1</div><div class="timeline-content"><h3 data-i18n="step1Title">Создаёте сделку</h3><p data-i18n="step1Desc">Укажите сумму, условия передачи NFT-подарка и реквизиты прямо в боте — это займёт меньше минуты.</p></div></div>
+          <div class="timeline-item fade-up"><div class="timeline-number">2</div><div class="timeline-content"><h3 data-i18n="step2Title">Покупатель оплачивает</h3><p data-i18n="step2Desc">Средства поступают на защищённый счёт и автоматически блокируются до выполнения условий.</p></div></div>
+          <div class="timeline-item fade-up"><div class="timeline-number">3</div><div class="timeline-content"><h3 data-i18n="step3Title">Передаёте подарок</h3><p data-i18n="step3Desc">Отправляете NFT-подарок покупателю. Бот фиксирует факт успешной передачи.</p></div></div>
+          <div class="timeline-item fade-up"><div class="timeline-number">4</div><div class="timeline-content"><h3 data-i18n="step4Title">Получаете деньги</h3><p data-i18n="step4Desc">Средства автоматически разблокируются и поступают на ваши реквизиты в течение нескольких минут.</p></div></div>
         </div>
       </div>
-    </div>
-    <div class="hero-visual">
-      <div class="hero-card">
-        <div class="hc-header">
-          <div class="hc-status">
-            <div class="hc-status-dot"></div>
-            Сделка активна
-          </div>
-          <div class="hc-id">#ET-20260625</div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-label" data-i18n="securityLabel">Безопасность</div>
+          <h2 class="section-title" data-i18n="securityTitle">Почему нам <span>доверяют</span></h2>
+          <p class="section-sub" data-i18n="securitySub">Каждая деталь сервиса разработана так, чтобы исключить мошенничество на всех этапах сделки.</p>
         </div>
-        <div class="hc-nft">
-          <div class="hc-nft-icon" style="overflow: hidden; padding: 0;">
-            <img src="rose.gif" alt="EternalRose" style="width: 100%; height: 100%; object-fit: cover;">
-          </div>
+        <div class="features-grid">
+          <div class="feat-card fade-up"><div class="icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div><h3 data-i18n="feat1Title">Блокировка средств</h3><p data-i18n="feat1Desc">Деньги покупателя замораживаются до подтверждения получения подарка. Снять их раньше срока нельзя.</p></div>
+          <div class="feat-card fade-up"><div class="icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><h3 data-i18n="feat2Title">Мгновенные выплаты</h3><p data-i18n="feat2Desc">Автоматическое зачисление в течение 5–10 минут после подтверждения передачи подарка.</p></div>
+          <div class="feat-card fade-up"><div class="icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3 data-i18n="feat3Title">Полная прозрачность</h3><p data-i18n="feat3Desc">История каждой сделки доступна обеим сторонам — публичный лог действий бота.</p></div>
+          <div class="feat-card fade-up"><div class="icon gold"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><h3 data-i18n="feat4Title">Арбитраж споров</h3><p data-i18n="feat4Desc">В случае конфликта независимый арбитр выносит решение в течение 30 рабочих дней.</p></div>
+          <div class="feat-card fade-up"><div class="icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><h3 data-i18n="feat5Title">Защита от фейков</h3><p data-i18n="feat5Desc">Только официальный @TrustsEscrowRobot. Бот верифицирует стороны и предупреждает о подозрительных действиях.</p></div>
+          <div class="feat-card fade-up"><div class="icon orange"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.39 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><h3 data-i18n="feat6Title">Поддержка 24/7</h3><p data-i18n="feat6Desc">@SupEscrow всегда на связи — отвечаем на любые вопросы по сделкам день или ночь.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST BANNER с duck.gif -->
+    <section class="trust-section">
+      <div class="wrap">
+        <div class="trust-banner fade-up">
           <div>
-            <div class="hc-nft-name">NFT «EternalRose»</div>
-            <div class="hc-nft-sub">Telegram Gift</div>
+            <h2 data-i18n="trustTitle">Работаем в рамках ФЗ-152 и ФЗ-115</h2>
+            <p data-i18n="trustDesc">Сервис соблюдает требования российского законодательства о персональных данных и противодействии отмыванию денег. Ваша безопасность — наш приоритет.</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <a href="#" onclick="openModal('termsModal'); return false;" class="btn-outline" data-i18n="trustTerms">Пользовательское соглашение</a>
+              <a href="#reviews" class="btn-ghost" style="background:rgba(255,255,255,0.12);color:#fff;border-color:transparent;" data-i18n="trustReviews">Отзывы</a>
+            </div>
+            <div class="stats">
+              <div><div class="num">2021</div><div class="label" data-i18n="trustYear">Год основания</div></div>
+              <div><div class="num">0</div><div class="label" data-i18n="trustLeaks">Утечек данных</div></div>
+            </div>
           </div>
-        </div>
-        <div class="hc-row">
-          <span class="hc-row-label">Сумма сделки</span>
-          <span class="hc-row-val">15 400 ₽</span>
-        </div>
-        <div class="hc-row">
-          <span class="hc-row-label">Статус оплаты</span>
-          <span class="hc-row-val green">✓ Оплата подтверждена</span>
-        </div>
-        <button class="hc-btn">Подтвердить передачу</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="how-section" id="how">
-  <div class="wrap">
-    <div class="section-head centered">
-      <div class="section-label">Процесс</div>
-      <h2 class="section-title">Как работает <span class="grad">Escrow Trust</span></h2>
-      <p class="section-sub">Четыре шага до безопасной сделки.</p>
-    </div>
-    <div class="steps-grid">
-      <div class="step-item fade-up">
-        <div class="step-num">01</div>
-        <div class="step-ico">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4a9eff" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-        </div>
-        <h3>Создаёте сделку</h3>
-        <p>Укажите сумму, условия передачи NFT-подарка и реквизиты прямо в боте — это займёт меньше минуты.</p>
-      </div>
-      <div class="step-item fade-up">
-        <div class="step-num">02</div>
-        <div class="step-ico">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4a9eff" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-        </div>
-        <h3>Покупатель оплачивает</h3>
-        <p>Средства поступают на защищённый транзитный счёт и автоматически блокируются до выполнения условий.</p>
-      </div>
-      <div class="step-item fade-up">
-        <div class="step-num">03</div>
-        <div class="step-ico">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4a9eff" stroke-width="1.8"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-        </div>
-        <h3>Передаёте подарок</h3>
-        <p>Отправляете NFT-подарок покупателю. Бот фиксирует факт успешной передачи на блокчейне Telegram.</p>
-      </div>
-      <div class="step-item fade-up">
-        <div class="step-num">04</div>
-        <div class="step-ico">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4a9eff" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-        <h3>Получаете деньги</h3>
-        <p>Средства автоматически разблокируются и поступают на ваши реквизиты в течение нескольких минут.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="features">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="section-label">Безопасность</div>
-      <h2 class="section-title">Почему нам доверяют</h2>
-      <p class="section-sub">Каждая деталь сервиса разработана так, чтобы исключить мошенничество на всех этапах сделки.</p>
-    </div>
-    <div class="features-grid">
-      <div class="feat-card fade-up">
-        <div class="feat-ico ico-blue">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a9eff" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-        </div>
-        <h3>Блокировка средств</h3>
-        <p>Деньги покупателя замораживаются до подтверждения получения подарка. Никто не может снять их раньше срока.</p>
-      </div>
-      <div class="feat-card fade-up">
-        <div class="feat-ico ico-teal">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d4c8" stroke-width="1.8"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <h3>Мгновенные выплаты</h3>
-        <p>Автоматическое зачисление в течение 5–10 минут после подтверждения передачи NFT-подарка.</p>
-      </div>
-      <div class="feat-card fade-up">
-        <div class="feat-ico ico-violet">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b6fff" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </div>
-        <h3>Полная прозрачность</h3>
-        <p>История каждой сделки доступна обеим сторонам. Публичный лог действий бота — ничего скрытого.</p>
-      </div>
-      <div class="feat-card fade-up">
-        <div class="feat-ico ico-gold">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f5b94a" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <h3>Арбитраж споров</h3>
-        <p>В случае конфликта независимый арбитр рассматривает ситуацию и выносит решение в течение 30 рабочих дней.</p>
-      </div>
-      <div class="feat-card fade-up">
-        <div class="feat-ico ico-green">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <h3>Защита от фейков</h3>
-        <p>Только официальный @SupEscrow. Бот верифицирует стороны сделки и предупреждает о подозрительных действиях.</p>
-      </div>
-      <div class="feat-card fade-up">
-        <div class="feat-ico ico-pink">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.39 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        </div>
-        <h3>Поддержка 24/7</h3>
-        <p>@SupEscrow всегда на связи. Отвечаем на любые вопросы по сделкам — день или ночь.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="trust-section">
-  <div class="wrap">
-    <div class="trust-inner" style="gap: 40px;">
-      <div class="trust-left">
-        <div class="trust-badge" style="width: 120px; height: 120px; background: none; border-radius: 0;">
-          <img src="Cookie.gif" alt="Cookie" style="width: 100%; height: 100%; object-fit: contain;">
-        </div>
-      </div>
-      <div class="trust-right">
-        <h2 style="font-size: 1.7rem; margin-bottom: 12px;">Работаем в рамках ФЗ-152 и ФЗ-115</h2>
-        <p style="font-size: 1rem; line-height: 1.7;">Сервис соблюдает требования российского законодательства о персональных данных и противодействии отмыванию денег. Ваша безопасность — наш приоритет.</p>
-      </div>
-      <div class="trust-stats">
-        <div>
-          <div class="trust-stat-val">2021</div>
-          <div class="trust-stat-label">Год основания</div>
-        </div>
-        <div>
-          <div class="trust-stat-val">0</div>
-          <div class="trust-stat-label">Утечек данных</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="reviews-section" id="reviews">
-  <div class="wrap">
-    <div class="section-head centered">
-      <div class="section-label">Отзывы</div>
-      <h2 class="section-title">Что говорят <span class="grad">клиенты</span></h2>
-      <p class="section-sub">Мы ценим доверие наших пользователей. Вот несколько реальных отзывов от тех, кто уже провел сделки через Escrow Trust.</p>
-    </div>
-    <div class="reviews-grid">
-      <div class="review-card fade-up">
-        <div class="review-stars">★★★★★</div>
-        <blockquote>«Очень удобный бот. Продавал редкий NFT-подарок, переживал, но всё прошло гладко. Деньги пришли за пару минут после отправки.»</blockquote>
-        <div class="review-author">
-          <div class="review-av" style="background: var(--blue-deep)">И</div>
-          <div>
-            <div class="review-name">Игорь М.</div>
-            <div class="review-role">Продавец</div>
+          <div class="mascot">
+            <img src="duck.gif" alt="Duck" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Ccircle cx=%22100%22 cy=%22100%22 r=%2280%22 fill=%22%23ffffff22%22/%3E%3Ctext x=%22100%22 y=%22115%22 text-anchor=%22middle%22 font-size=%2264%22 font-family=%22sans-serif%22 fill=%22%23fff%22%3E🦆%3C/text%3E%3C/svg%3E'">
           </div>
         </div>
       </div>
-      <div class="review-card fade-up">
-        <div class="review-stars">★★★★★</div>
-        <blockquote>«Покупал подарок для друга. Было страшно переводить деньги первому, но гарант-сервис всё решил. Отличная поддержка!»</blockquote>
-        <div class="review-author">
-          <div class="review-av" style="background: var(--teal)">A</div>
-          <div>
-            <div class="review-name">Alexey</div>
-            <div class="review-role">Покупатель</div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section id="reviews">
+      <div class="wrap">
+        <div class="section-head centered">
+          <div class="section-label" data-i18n="reviewsLabel">Отзывы</div>
+          <h2 class="section-title" data-i18n="reviewsTitle">Что говорят <span>клиенты</span></h2>
+          <p class="section-sub" data-i18n="reviewsSub">Реальные отзывы от тех, кто уже провёл сделки через TrustEscrow.</p>
+        </div>
+        <div class="reviews-grid">
+          <div class="review-card fade-up">
+            <div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div>
+            <blockquote data-i18n="review1Text">«Очень удобный бот. Продавал редкий NFT-подарок, переживал, но всё прошло гладко. Деньги пришли за пару минут.»</blockquote>
+            <div class="review-author"><div class="review-avatar" style="background:#1ea5ff;">И</div><div><div class="review-name" data-i18n="review1Name">Игорь М.</div><div class="review-role" data-i18n="review1Role">Продавец</div></div></div>
+          </div>
+          <div class="review-card fade-up">
+            <div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div>
+            <blockquote data-i18n="review2Text">«Покупал подарок для друга. Было страшно переводить деньги первому, но гарант-сервис всё решил. Отличная поддержка!»</blockquote>
+            <div class="review-author"><div class="review-avatar" style="background:#34d399;">A</div><div><div class="review-name" data-i18n="review2Name">Alexey</div><div class="review-role" data-i18n="review2Role">Покупатель</div></div></div>
+          </div>
+          <div class="review-card fade-up">
+            <div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div>
+            <blockquote data-i18n="review3Text">«Лучший гарант на рынке Telegram. Интуитивно понятный бот, быстрая реакция арбитража. Рекомендую всем.»</blockquote>
+            <div class="review-author"><div class="review-avatar" style="background:#ff8a3d;">К</div><div><div class="review-name" data-i18n="review3Name">Кристина В.</div><div class="review-role" data-i18n="review3Role">Пользователь</div></div></div>
           </div>
         </div>
       </div>
-      <div class="review-card fade-up">
-        <div class="review-stars">★★★★★</div>
-        <blockquote>«Лучший гарант на рынке Telegram. Интуитивно понятный бот, быстрая реакция арбитража на спорную ситуацию. Рекомендую всем.»</blockquote>
-        <div class="review-author">
-          <div class="review-av" style="background: var(--violet)">К</div>
-          <div>
-            <div class="review-name">Кристина В.</div>
-            <div class="review-role">Пользователь</div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <div class="wrap">
+        <div class="faq-box fade-up">
+          <div class="section-label" data-i18n="faqLabel">Вопросы</div>
+          <h2 class="section-title" data-i18n="faqTitle">Частые вопросы</h2>
+          <p class="section-sub" style="margin:0 auto;" data-i18n="faqSub">Найдите быстрый ответ на самые популярные вопросы.</p>
+          <div class="faq-list">
+            <div class="faq-item"><div class="faq-q" data-i18n="faq1Q">Сколько времени занимает выплата? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p data-i18n="faq1A">Средства поступают на реквизиты продавца в течение 5–10 минут после подтверждения передачи NFT-подарка.</p></div></div>
+            <div class="faq-item"><div class="faq-q" data-i18n="faq2Q">Что если возникнет спор? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p data-i18n="faq2A">Спорную сделку рассматривает независимый арбитр. Решение выносится в течение 30 рабочих дней через @SupEscrow.</p></div></div>
+            <div class="faq-item"><div class="faq-q" data-i18n="faq3Q">Можно ли вернуть деньги? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p data-i18n="faq3A">Пока средства заблокированы и подарок не передан, покупатель может отменить сделку через поддержку.</p></div></div>
           </div>
+          <a href="https://t.me/SupEscrow" target="_blank" class="btn-primary" style="margin-top:28px;padding:12px 32px;" data-i18n="faqSupport">Нужна помощь? Поддержка</a>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="cta-section">
-  <div class="wrap">
-    <div class="cta-box fade-up">
-      <h2>Начните безопасную сделку прямо сейчас</h2>
-      <p>Никаких скрытых комиссий и долгих регистраций. Переходите в Telegram-бота и создайте первую сделку за пару кликов.</p>
-      <div class="cta-actions">
-        <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn btn-primary">Запустить бота</a>
-        <a href="https://t.me/SupEscrow" target="_blank" class="btn btn-ghost">Задать вопрос</a>
-      </div>
-      <div class="cta-warning">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span>Остерегайтесь мошенников. Наш единственный бот — <strong>@TrustsEscrowRobot</strong></span>
-      </div>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<footer id="support">
-  <div class="wrap">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a href="#" class="logo">
-          <div class="logo-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" fill="white" opacity="0.9"/>
-            </svg>
+    <!-- CTA -->
+    <section style="padding:0 0 80px;">
+      <div class="wrap">
+        <div class="cta-box fade-up">
+          <h2 data-i18n="ctaTitle">Начните безопасную сделку <br>прямо сейчас</h2>
+          <p data-i18n="ctaDesc">Никаких скрытых комиссий и долгих регистраций. Переходите в Telegram-бота и создайте первую сделку за пару кликов.</p>
+          <div class="cta-actions">
+            <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="btn-primary" style="padding:14px 32px;" data-i18n="ctaBot">Запустить бота</a>
+            <a href="https://t.me/SupEscrow" target="_blank" class="btn-outline" data-i18n="ctaSupport">Задать вопрос</a>
           </div>
-          <span class="logo-text">Escrow <em>Trust</em></span>
-        </a>
-        <p>Гарант-сервис для безопасных сделок с NFT-подарками в Telegram. Ваши деньги полностью защищены до завершения сделки.</p>
+          <div class="cta-warning"><span data-i18n="ctaWarn1">Остерегайтесь мошенников. Наш единственный бот — </span><strong data-i18n="ctaWarn2">@TrustsEscrowRobot</strong></div>
+        </div>
       </div>
-      <div class="footer-col">
-        <h4>Сервис</h4>
-        <a href="https://t.me/TrustsEscrowRobot" target="_blank">Телеграм-бот</a>
-        <a href="https://t.me/SupEscrow" target="_blank">Поддержка</a>
-        <a href="#" onclick="openModal('termsModal'); return false;">Пользовательское соглашение</a>
-        <a href="#" onclick="openModal('privacyModal'); return false;">Политика конфиденциальности</a>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="support">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/></svg></div><span>TrustEscrow</span></a>
+          <p data-i18n="footerDesc">Гарант-сервис для безопасных сделок с NFT-подарками в Telegram. Ваши деньги полностью защищены до завершения сделки.</p>
+        </div>
+        <div class="footer-col"><h4 data-i18n="footerService">Сервис</h4><a href="https://t.me/TrustsEscrowRobot" target="_blank" data-i18n="footerBot">Телеграм-бот</a><a href="https://t.me/SupEscrow" target="_blank" data-i18n="footerSupport">Поддержка</a><a href="#" onclick="openModal('termsModal'); return false;" data-i18n="footerTerms">Пользовательское соглашение</a><a href="#" onclick="openModal('privacyModal'); return false;" data-i18n="footerPrivacy">Политика конфиденциальности</a></div>
+        <div class="footer-col"><h4 data-i18n="footerContacts">Контакты</h4><a href="https://t.me/SupEscrow" target="_blank">@SupEscrow</a><a href="https://t.me/TrustsEscrowRobot" target="_blank">@TrustsEscrowRobot</a></div>
+        <div class="footer-col"><h4 data-i18n="footerLanguage">Язык</h4><a href="#" data-lang="ru" data-i18n="langRu">Русский</a><a href="#" data-lang="en" data-i18n="langEn">English</a></div>
       </div>
-      <div class="footer-col">
-        <h4>Контакты</h4>
-        <a href="https://t.me/SupEscrow" target="_blank" class="footer-tg">@SupEscrow</a>
-        <a href="https://t.me/TrustsEscrowRobot" target="_blank" class="footer-tg">@TrustsEscrowRobot</a>
+      <div class="footer-bottom">
+        <p>© 2026 TrustEscrow. <span data-i18n="footerRights">Все права защищены.</span></p>
+        <div style="display:flex;gap:8px;align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.2l-2.02 9.52c-.15.68-.54.84-1.08.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.6.3l.21-3.04 5.5-4.97c.24-.21-.05-.33-.37-.12L6.6 14.37l-2.93-.92c-.64-.2-.65-.64.13-.95l11.44-4.41c.53-.19 1 .13.82.94l-.5.17z"/></svg> Telegram</div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>© 2026 Escrow Trust. Все права защищены.</p>
-      <div style="display:flex; gap:10px; align-items:center; color: var(--dim); font-size: 0.8rem;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.2l-2.02 9.52c-.15.68-.54.84-1.08.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.6.3l.21-3.04 5.5-4.97c.24-.21-.05-.33-.37-.12L6.6 14.37l-2.93-.92c-.64-.2-.65-.64.13-.95l11.44-4.41c.53-.19 1 .13.82.94l-.5.17z"/></svg>
-        Telegram
-      </div>
-    </div>
+  </footer>
+
+  <!-- MODALS -->
+  <div class="modal-overlay" id="termsModal"><div class="modal"><div class="modal-header"><div><h2 data-i18n="modalTermsTitle">Пользовательское соглашение</h2><p data-i18n="modalTermsDate">Редакция от 1 июня 2026 года</p></div><button class="modal-close" onclick="closeModal('termsModal')">×</button></div><div class="modal-body"><h3 data-i18n="modalTerms1Title">1. Общие положения</h3><p data-i18n="modalTerms1P1">1.1. Сервис TrustEscrow предоставляет услуги безопасного проведения сделок (гарант) между пользователями мессенджера Telegram. Использование бота означает полное согласие с данными правилами.</p><p data-i18n="modalTerms1P2">1.2. Сервис не является платёжным агентом, кредитной организацией или оператором платёжной системы. Все расчёты осуществляются через сторонние платёжные системы.</p><h3 data-i18n="modalTerms2Title">2. Обязанности сторон</h3><ul><li data-i18n="modalTerms2L1">Покупатель обязуется оплатить стоимость товара на транзитный счёт сервиса.</li><li data-i18n="modalTerms2L2">Продавец обязуется передать заявленный NFT-подарок после подтверждения оплаты.</li><li data-i18n="modalTerms2L3">Сервис обязуется перевести средства продавцу только после успешной передачи товара.</li></ul><h3 data-i18n="modalTerms3Title">3. Запрет на мошеннические операции</h3><p data-i18n="modalTerms3P">Пользователь гарантирует, что все денежные средства и цифровые активы получены законным путём. Сервис оставляет за собой право передать информацию о пользователе в уполномоченные органы (ФЗ-115).</p><h3 data-i18n="modalTerms4Title">4. Ограничение ответственности</h3><p data-i18n="modalTerms4P">Сервис не несёт ответственности за действия банков, платёжных систем, задержки зачисления средств, связанные с работой банков-отправителей или банков-получателей.</p><h3 data-i18n="modalTerms5Title">5. Порядок разрешения споров</h3><p data-i18n="modalTerms5P">Все спорные вопросы решаются через официальный канал поддержки @SupEscrow. Срок рассмотрения претензий — 30 рабочих дней.</p></div></div></div>
+
+  <div class="modal-overlay" id="privacyModal"><div class="modal"><div class="modal-header"><div><h2 data-i18n="modalPrivacyTitle">Политика конфиденциальности</h2><p data-i18n="modalPrivacySub">В соответствии с ФЗ-152</p></div><button class="modal-close" onclick="closeModal('privacyModal')">×</button></div><div class="modal-body"><h3 data-i18n="modalPrivacy1Title">1. Сбор данных</h3><p data-i18n="modalPrivacy1P">Мы собираем только ту информацию, которая необходима для проведения сделок: идентификатор пользователя Telegram, публичные реквизиты для выплат и историю транзакций внутри бота.</p><h3 data-i18n="modalPrivacy2Title">2. Хранение и защита</h3><p data-i18n="modalPrivacy2P">Все данные передаются по зашифрованным каналам. Мы не передаём информацию о пользователях третьим лицам, за исключением случаев, предусмотренных законодательством (ФЗ-115).</p><h3 data-i18n="modalPrivacy3Title">3. Цели обработки</h3><ul><li data-i18n="modalPrivacy3L1">Проведение сделок с цифровыми активами.</li><li data-i18n="modalPrivacy3L2">Обеспечение работы бота.</li><li data-i18n="modalPrivacy3L3">Консультационная поддержка.</li><li data-i18n="modalPrivacy3L4">Соблюдение требований законодательства.</li></ul><h3 data-i18n="modalPrivacy4Title">4. Права пользователя</h3><p data-i18n="modalPrivacy4P">Пользователь имеет право получить информацию о своих персональных данных и требовать их уточнения, блокировки или уничтожения, обратившись в поддержку @SupEscrow.</p></div></div></div>
+
+  <!-- PEEKING PETS -->
+  <div class="peeking-pets">
+    <img src="Celestia.png" alt="Celestia" onerror="this.style.display='none'">
+    <img src="Bubblegum.png" alt="Bubblegum" onerror="this.style.display='none'">
+    <img src="Hue Jester.png" alt="Hue Jester" onerror="this.style.display='none'">
   </div>
-</footer>
 
-<!-- MODALS -->
-<div class="modal-overlay" id="termsModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div>
-        <h2>Пользовательское соглашение</h2>
-        <p>Редакция от 1 июня 2026 года</p>
-      </div>
-      <button class="modal-close" onclick="closeModal('termsModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="doc-section"><h3>1. Общие положения</h3><p>1.1. Сервис Escrow Trust (далее — «Сервис») предоставляет услуги безопасного проведения сделок (гарант) между пользователями мессенджера Telegram. Использование бота означает полное согласие с данными правилами.</p><p>1.2. Сервис не является платёжным агентом, кредитной организацией или оператором платёжной системы. Все расчёты осуществляются через сторонние платёжные системы и банковские учреждения.</p><p>1.3. Сервис не принимает, не хранит и не обрабатывает денежные средства пользователей на своих счетах.</p></div>
-      <div class="doc-section"><h3>2. Обязанности сторон</h3><ul><li>Покупатель обязуется оплатить стоимость товара на транзитный счет сервиса.</li><li>Продавец обязуется передать заявленный NFT-подарок после подтверждения оплаты.</li><li>Сервис обязуется перевести средства продавцу только после успешной передачи товара.</li><li>Стороны обязуются предоставлять достоверные данные при использовании Сервиса.</li></ul></div>
-      <div class="doc-section"><h3>3. Запрет на мошеннические операции</h3><p>3.1. Пользователю запрещается использовать Сервис для проведения операций, связанных с легализацией (отмыванием) доходов, полученных преступным путём, финансированием террористической деятельности, мошенническими действиями любого характера.</p><p>3.2. Пользователь гарантирует, что все денежные средства и цифровые активы, участвующие в сделках через Сервис, получены законным путём.</p><p>3.3. Сервис оставляет за собой право передать информацию о Пользователе и совершённых им операциях в уполномоченные государственные органы (включая банки, Росфинмониторинг, правоохранительные органы) в случаях, предусмотренных законодательством Российской Федерации (ФЗ-115).</p></div>
-      <div class="doc-section"><h3>4. Ограничение ответственности</h3><p>4.1. Сервис не несёт ответственности за действия банков-эмитентов, платёжных систем и платёжных шлюзов, включая отклонение, задержку, блокировку или аннулирование переводов.</p><p>4.2. Сервис не несёт ответственности за задержки зачисления средств, связанные с работой банков-отправителей или банков-получателей.</p><p>4.3. Сервис не даёт гарантий бесперебойной работы платёжных систем и банковских учреждений.</p><p>4.4. Пользователь принимает на себя все риски, связанные с использованием сторонних платёжных систем и банковских учреждений.</p></div>
-      <div class="doc-section"><h3>5. Порядок разрешения споров</h3><p>5.1. Все спорные вопросы решаются путём переговоров через официальный канал поддержки @SupEscrow.</p><p>5.2. В случае невозможности урегулирования спора путём переговоров, он передаётся на рассмотрение в соответствии с законодательством Российской Федерации.</p><p>5.3. Срок рассмотрения претензий не превышает 30 (тридцати) рабочих дней.</p></div>
-      <div class="doc-section"><h3>6. Заключительные положения</h3><p>6.1. Сервис оставляет за собой право вносить изменения в настоящее Соглашение без предварительного уведомления Пользователей.</p><p>6.2. Актуальная версия Соглашения доступна на официальных ресурсах Сервиса.</p><p>6.3. Использование Сервиса после внесения изменений означает принятие новой редакции Соглашения.</p></div>
-    </div>
-  </div>
-</div>
+  <!-- SCRIPTS -->
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script>
+    // ===== LENIS SMOOTH SCROLL =====
+    (function() {
+      const lenis = new Lenis({ duration:1.2, easing: t => Math.min(1, 1.001 - Math.pow(2, -10*t)), smoothWheel: true, wheelMultiplier:0.8 });
+      function raf(time){ lenis.raf(time); requestAnimationFrame(raf); }
+      requestAnimationFrame(raf);
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+          const target = document.querySelector(a.getAttribute('href'));
+          if(target) { e.preventDefault(); lenis.scrollTo(target, { offset: -80, duration: 1.2 }); }
+        });
+      });
+    })();
 
-<div class="modal-overlay" id="privacyModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div>
-        <h2>Политика конфиденциальности</h2>
-        <p>В соответствии с ФЗ-152</p>
-      </div>
-      <button class="modal-close" onclick="closeModal('privacyModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="doc-section"><h3>1. Сбор данных</h3><p>1.1. Мы собираем только ту информацию, которая необходима для проведения сделок: идентификатор пользователя Telegram (ID), публичные реквизиты для выплат и историю транзакций внутри бота.</p><p>1.2. Сервис не собирает данные, не относящиеся к использованию платформы.</p></div>
-      <div class="doc-section"><h3>2. Хранение и защита</h3><p>2.1. Все данные передаются по зашифрованным каналам связи. Мы не передаём информацию о пользователях третьим лицам, за исключением случаев, предусмотренных законодательством Российской Федерации (ФЗ-115).</p><p>2.2. Сервис принимает технические и организационные меры для защиты персональных данных от несанкционированного доступа.</p></div>
-      <div class="doc-section"><h3>3. Цели обработки данных</h3><ul><li>Проведение сделок с цифровыми активами (NFT-подарками).</li><li>Обеспечение работы функционала бота.</li><li>Консультационная поддержка и решение технических вопросов.</li><li>Соблюдение требований законодательства, включая противодействие легализации доходов (отмыванию денег) и финансированию терроризма.</li></ul></div>
-      <div class="doc-section"><h3>4. Права Пользователя</h3><p>4.1. Пользователь имеет право получить информацию о своих персональных данных, обрабатываемых Сервисом, а также требовать их уточнения, блокировки или уничтожения в случае их неполноты или недостоверности.</p><p>4.2. Для реализации прав Пользователь должен обратиться в официальную поддержку @SupEscrow.</p></div>
-    </div>
-  </div>
-</div>
+    // ===== INTERSECTION OBSERVER =====
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-<div class="peeking-pets">
-  <img src="Celestia.png" alt="Celestia">
-  <img src="Bubblegum.png" alt="Bubblegum">
-  <img src="Hue Jester.png" alt="Hue Jester">
-</div>
-
-<script>
-  // === LENIS (ПЛАВНЫЙ СКРОЛЛ) ===
-  const lenis = new Lenis({
-    duration: 1.5,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    orientation: 'vertical',
-    gestureOrientation: 'vertical',
-    smoothWheel: true,
-    wheelMultiplier: 0.8,
-    touchMultiplier: 0.8,
-  });
-
-  function raf(time) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
-
-  // Плавные якоря через Lenis
-  document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = document.querySelector(anchor.getAttribute('href'));
-      if (target) {
-        lenis.scrollTo(target, { offset: -68, duration: 1.6 });
+    // ===== THEME TOGGLE =====
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    function updateThemeIcon(theme) {
+      if (theme === 'dark') {
+        themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+      } else {
+        themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
       }
-    });
-  });
-
-  // Sticky Header
-  const header = document.getElementById('header');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 20) {
-      header.classList.add('stuck');
-    } else {
-      header.classList.remove('stuck');
     }
-  });
-
-  // Fade Up Animation Observer
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-      }
+    updateThemeIcon(savedTheme);
+    themeToggle.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateThemeIcon(next);
     });
-  }, { threshold: 0.1 });
-  
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-  // Modals Logic
-  function openModal(id) {
-    document.getElementById(id).classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-    document.body.style.overflow = '';
-  }
+    // ===== LANGUAGE SWITCH =====
+    const langToggle = document.getElementById('langToggle');
+    const langLabel = document.getElementById('langLabel');
+    let currentLang = 'ru';
+    const translations = {
+      ru: {
+        navHow: 'Как работает', navSecurity: 'Безопасность', navReviews: 'Отзывы', navFaq: 'FAQ',
+        openBot: 'Открыть бота',
+        heroTitle: 'Безопасные сделки <br><span>в Telegram</span>',
+        heroDesc: 'Покупатель переводит деньги — бот блокирует средства — вы передаёте NFT-подарок — получаете оплату. Без риска и обмана.',
+        btnStart: 'Начать сделку', btnHow: 'Как работает',
+        statDeals: 'Сделок проведено', statSuccess: 'Успешных', statSupport: 'Поддержка', statFraud: 'Мошенничества',
+        tileArbitrationTitle: 'Арбитраж 24/7', tileArbitrationDesc: 'Независимая проверка спорных сделок в любое время',
+        tileBotTitle: 'Escrow Trust Bot', tileBotDesc: 'Проводите сделки не выходя из Telegram',
+        processLabel: 'Процесс', processTitle: 'Как работает <span>TrustEscrow</span>', processSub: 'Четыре простых шага до безопасной сделки.',
+        step1Title: 'Создаёте сделку', step1Desc: 'Укажите сумму, условия передачи NFT-подарка и реквизиты прямо в боте — это займёт меньше минуты.',
+        step2Title: 'Покупатель оплачивает', step2Desc: 'Средства поступают на защищённый счёт и автоматически блокируются до выполнения условий.',
+        step3Title: 'Передаёте подарок', step3Desc: 'Отправляете NFT-подарок покупателю. Бот фиксирует факт успешной передачи.',
+        step4Title: 'Получаете деньги', step4Desc: 'Средства автоматически разблокируются и поступают на ваши реквизиты в течение нескольких минут.',
+        securityLabel: 'Безопасность', securityTitle: 'Почему нам <span>доверяют</span>', securitySub: 'Каждая деталь сервиса разработана так, чтобы исключить мошенничество на всех этапах сделки.',
+        feat1Title: 'Блокировка средств', feat1Desc: 'Деньги покупателя замораживаются до подтверждения получения подарка. Снять их раньше срока нельзя.',
+        feat2Title: 'Мгновенные выплаты', feat2Desc: 'Автоматическое зачисление в течение 5–10 минут после подтверждения передачи подарка.',
+        feat3Title: 'Полная прозрачность', feat3Desc: 'История каждой сделки доступна обеим сторонам — публичный лог действий бота.',
+        feat4Title: 'Арбитраж споров', feat4Desc: 'В случае конфликта независимый арбитр выносит решение в течение 30 рабочих дней.',
+        feat5Title: 'Защита от фейков', feat5Desc: 'Только официальный @TrustsEscrowRobot. Бот верифицирует стороны и предупреждает о подозрительных действиях.',
+        feat6Title: 'Поддержка 24/7', feat6Desc: '@SupEscrow всегда на связи — отвечаем на любые вопросы по сделкам день или ночь.',
+        trustTitle: 'Работаем в рамках ФЗ-152 и ФЗ-115', trustDesc: 'Сервис соблюдает требования российского законодательства о персональных данных и противодействии отмыванию денег. Ваша безопасность — наш приоритет.',
+        trustTerms: 'Пользовательское соглашение', trustReviews: 'Отзывы', trustYear: 'Год основания', trustLeaks: 'Утечек данных',
+        reviewsLabel: 'Отзывы', reviewsTitle: 'Что говорят <span>клиенты</span>', reviewsSub: 'Реальные отзывы от тех, кто уже провёл сделки через TrustEscrow.',
+        review1Text: '«Очень удобный бот. Продавал редкий NFT-подарок, переживал, но всё прошло гладко. Деньги пришли за пару минут.»',
+        review1Name: 'Игорь М.', review1Role: 'Продавец',
+        review2Text: '«Покупал подарок для друга. Было страшно переводить деньги первому, но гарант-сервис всё решил. Отличная поддержка!»',
+        review2Name: 'Alexey', review2Role: 'Покупатель',
+        review3Text: '«Лучший гарант на рынке Telegram. Интуитивно понятный бот, быстрая реакция арбитража. Рекомендую всем.»',
+        review3Name: 'Кристина В.', review3Role: 'Пользователь',
+        faqLabel: 'Вопросы', faqTitle: 'Частые вопросы', faqSub: 'Найдите быстрый ответ на самые популярные вопросы.',
+        faq1Q: 'Сколько времени занимает выплата?', faq1A: 'Средства поступают на реквизиты продавца в течение 5–10 минут после подтверждения передачи NFT-подарка.',
+        faq2Q: 'Что если возникнет спор?', faq2A: 'Спорную сделку рассматривает независимый арбитр. Решение выносится в течение 30 рабочих дней через @SupEscrow.',
+        faq3Q: 'Можно ли вернуть деньги?', faq3A: 'Пока средства заблокированы и подарок не передан, покупатель может отменить сделку через поддержку.',
+        faqSupport: 'Нужна помощь? Поддержка',
+        ctaTitle: 'Начните безопасную сделку <br>прямо сейчас', ctaDesc: 'Никаких скрытых комиссий и долгих регистраций. Переходите в Telegram-бота и создайте первую сделку за пару кликов.',
+        ctaBot: 'Запустить бота', ctaSupport: 'Задать вопрос', ctaWarn1: 'Остерегайтесь мошенников. Наш единственный бот — ', ctaWarn2: '@TrustsEscrowRobot',
+        footerDesc: 'Гарант-сервис для безопасных сделок с NFT-подарками в Telegram. Ваши деньги полностью защищены до завершения сделки.',
+        footerService: 'Сервис', footerBot: 'Телеграм-бот', footerSupport: 'Поддержка', footerTerms: 'Пользовательское соглашение', footerPrivacy: 'Политика конфиденциальности',
+        footerContacts: 'Контакты', footerLanguage: 'Язык', langRu: 'Русский', langEn: 'English', footerRights: 'Все права защищены.',
+        modalTermsTitle: 'Пользовательское соглашение', modalTermsDate: 'Редакция от 1 июня 2026 года',
+        modalTerms1Title: '1. Общие положения', modalTerms1P1: '1.1. Сервис TrustEscrow предоставляет услуги безопасного проведения сделок (гарант) между пользователями мессенджера Telegram. Использование бота означает полное согласие с данными правилами.', modalTerms1P2: '1.2. Сервис не является платёжным агентом, кредитной организацией или оператором платёжной системы. Все расчёты осуществляются через сторонние платёжные системы.',
+        modalTerms2Title: '2. Обязанности сторон', modalTerms2L1: 'Покупатель обязуется оплатить стоимость товара на транзитный счёт сервиса.', modalTerms2L2: 'Продавец обязуется передать заявленный NFT-подарок после подтверждения оплаты.', modalTerms2L3: 'Сервис обязуется перевести средства продавцу только после успешной передачи товара.',
+        modalTerms3Title: '3. Запрет на мошеннические операции', modalTerms3P: 'Пользователь гарантирует, что все денежные средства и цифровые активы получены законным путём. Сервис оставляет за собой право передать информацию о пользователе в уполномоченные органы (ФЗ-115).',
+        modalTerms4Title: '4. Ограничение ответственности', modalTerms4P: 'Сервис не несёт ответственности за действия банков, платёжных систем, задержки зачисления средств, связанные с работой банков-отправителей или банков-получателей.',
+        modalTerms5Title: '5. Порядок разрешения споров', modalTerms5P: 'Все спорные вопросы решаются через официальный канал поддержки @SupEscrow. Срок рассмотрения претензий — 30 рабочих дней.',
+        modalPrivacyTitle: 'Политика конфиденциальности', modalPrivacySub: 'В соответствии с ФЗ-152',
+        modalPrivacy1Title: '1. Сбор данных', modalPrivacy1P: 'Мы собираем только ту информацию, которая необходима для проведения сделок: идентификатор пользователя Telegram, публичные реквизиты для выплат и историю транзакций внутри бота.',
+        modalPrivacy2Title: '2. Хранение и защита', modalPrivacy2P: 'Все данные передаются по зашифрованным каналам. Мы не передаём информацию о пользователях третьим лицам, за исключением случаев, предусмотренных законодательством (ФЗ-115).',
+        modalPrivacy3Title: '3. Цели обработки', modalPrivacy3L1: 'Проведение сделок с цифровыми активами.', modalPrivacy3L2: 'Обеспечение работы бота.', modalPrivacy3L3: 'Консультационная поддержка.', modalPrivacy3L4: 'Соблюдение требований законодательства.',
+        modalPrivacy4Title: '4. Права пользователя', modalPrivacy4P: 'Пользователь имеет право получить информацию о своих персональных данных и требовать их уточнения, блокировки или уничтожения, обратившись в поддержку @SupEscrow.'
+      },
+      en: {
+        navHow: 'How it works', navSecurity: 'Security', navReviews: 'Reviews', navFaq: 'FAQ',
+        openBot: 'Open bot',
+        heroTitle: 'Secure deals <br><span>in Telegram</span>',
+        heroDesc: 'Buyer sends funds — bot locks them — you transfer the NFT gift — you get paid. No risk, no fraud.',
+        btnStart: 'Start deal', btnHow: 'How it works',
+        statDeals: 'Deals completed', statSuccess: 'Success rate', statSupport: 'Support', statFraud: 'Fraud',
+        tileArbitrationTitle: 'Arbitration 24/7', tileArbitrationDesc: 'Independent dispute resolution anytime',
+        tileBotTitle: 'Escrow Trust Bot', tileBotDesc: 'Make deals without leaving Telegram',
+        processLabel: 'Process', processTitle: 'How <span>TrustEscrow</span> works', processSub: 'Four simple steps to a secure deal.',
+        step1Title: 'Create a deal', step1Desc: 'Specify the amount, NFT gift transfer terms and details right in the bot — it takes less than a minute.',
+        step2Title: 'Buyer pays', step2Desc: 'Funds are deposited into a protected account and automatically locked until conditions are met.',
+        step3Title: 'Transfer the gift', step3Desc: 'Send the NFT gift to the buyer. The bot records the successful transfer.',
+        step4Title: 'Get paid', step4Desc: 'Funds are automatically unlocked and sent to your details within minutes.',
+        securityLabel: 'Security', securityTitle: 'Why <span>trust us</span>', securitySub: 'Every detail of the service is designed to eliminate fraud at all stages of the deal.',
+        feat1Title: 'Funds lock', feat1Desc: 'Buyer\'s money is frozen until gift receipt is confirmed. Cannot be withdrawn early.',
+        feat2Title: 'Instant payouts', feat2Desc: 'Automatic transfer within 5–10 minutes after gift transfer confirmation.',
+        feat3Title: 'Full transparency', feat3Desc: 'Transaction history is available to both parties — public bot action log.',
+        feat4Title: 'Dispute arbitration', feat4Desc: 'In case of conflict, an independent arbitrator makes a decision within 30 business days.',
+        feat5Title: 'Anti-fraud protection', feat5Desc: 'Only official @TrustsEscrowRobot. The bot verifies parties and warns about suspicious activity.',
+        feat6Title: '24/7 Support', feat6Desc: '@SupEscrow is always available — we answer any questions day or night.',
+        trustTitle: 'Compliant with FZ-152 and FZ-115', trustDesc: 'The service complies with Russian legislation on personal data and anti-money laundering. Your security is our priority.',
+        trustTerms: 'Terms of Service', trustReviews: 'Reviews', trustYear: 'Founded', trustLeaks: 'Data leaks',
+        reviewsLabel: 'Reviews', reviewsTitle: 'What <span>clients say</span>', reviewsSub: 'Real reviews from those who have already made deals through TrustEscrow.',
+        review1Text: '«Very convenient bot. Sold a rare NFT gift, was worried, but everything went smoothly. Money arrived in a couple of minutes.»',
+        review1Name: 'Igor M.', review1Role: 'Seller',
+        review2Text: '«Bought a gift for a friend. Was scared to send money first, but the escrow service solved everything. Great support!»',
+        review2Name: 'Alexey', review2Role: 'Buyer',
+        review3Text: '«The best escrow on the Telegram market. Intuitive bot, fast arbitration response. Recommend to everyone.»',
+        review3Name: 'Kristina V.', review3Role: 'User',
+        faqLabel: 'Questions', faqTitle: 'Frequently Asked Questions', faqSub: 'Find quick answers to the most popular questions.',
+        faq1Q: 'How long does payout take?', faq1A: 'Funds are sent to the seller\'s details within 5–10 minutes after NFT gift transfer confirmation.',
+        faq2Q: 'What if a dispute arises?', faq2A: 'A disputed deal is reviewed by an independent arbitrator. A decision is made within 30 business days via @SupEscrow.',
+        faq3Q: 'Can I get a refund?', faq3A: 'While funds are locked and the gift has not been transferred, the buyer can cancel the deal through support.',
+        faqSupport: 'Need help? Support',
+        ctaTitle: 'Start a secure deal <br>right now', ctaDesc: 'No hidden fees or long registrations. Go to the Telegram bot and create your first deal in a few clicks.',
+        ctaBot: 'Launch bot', ctaSupport: 'Ask a question', ctaWarn1: 'Beware of scammers. Our only bot is ', ctaWarn2: '@TrustsEscrowRobot',
+        footerDesc: 'Escrow service for safe NFT gift deals in Telegram. Your funds are fully protected until the deal is complete.',
+        footerService: 'Service', footerBot: 'Telegram bot', footerSupport: 'Support', footerTerms: 'Terms of Service', footerPrivacy: 'Privacy Policy',
+        footerContacts: 'Contacts', footerLanguage: 'Language', langRu: 'Russian', langEn: 'English', footerRights: 'All rights reserved.',
+        modalTermsTitle: 'Terms of Service', modalTermsDate: 'Version dated June 1, 2026',
+        modalTerms1Title: '1. General Provisions', modalTerms1P1: '1.1. TrustEscrow provides safe transaction (escrow) services between Telegram users. Using the bot means full acceptance of these rules.', modalTerms1P2: '1.2. The service is not a payment agent, credit institution or payment system operator. All settlements are made through third-party payment systems.',
+        modalTerms2Title: '2. Obligations of the Parties', modalTerms2L1: 'The buyer undertakes to pay for the goods to the service\'s transit account.', modalTerms2L2: 'The seller undertakes to transfer the declared NFT gift after payment confirmation.', modalTerms2L3: 'The service undertakes to transfer funds to the seller only after successful transfer of the goods.',
+        modalTerms3Title: '3. Prohibition on Fraudulent Operations', modalTerms3P: 'The user guarantees that all funds and digital assets involved in transactions have been obtained legally. The service reserves the right to transfer information about the user to authorized authorities (FZ-115).',
+        modalTerms4Title: '4. Limitation of Liability', modalTerms4P: 'The service is not responsible for the actions of banks, payment systems, delays in crediting funds related to the work of sending or receiving banks.',
+        modalTerms5Title: '5. Dispute Resolution Procedure', modalTerms5P: 'All disputes are resolved through the official support channel @SupEscrow. The review period is 30 business days.',
+        modalPrivacyTitle: 'Privacy Policy', modalPrivacySub: 'In accordance with FZ-152',
+        modalPrivacy1Title: '1. Data Collection', modalPrivacy1P: 'We collect only the information necessary for transactions: Telegram user ID, public payout details and transaction history within the bot.',
+        modalPrivacy2Title: '2. Storage and Protection', modalPrivacy2P: 'All data is transmitted over encrypted channels. We do not share user information with third parties, except as required by law (FZ-115).',
+        modalPrivacy3Title: '3. Purposes of Processing', modalPrivacy3L1: 'Conducting transactions with digital assets.', modalPrivacy3L2: 'Ensuring the bot\'s functionality.', modalPrivacy3L3: 'Consultation support.', modalPrivacy3L4: 'Compliance with legal requirements.',
+        modalPrivacy4Title: '4. User Rights', modalPrivacy4P: 'The user has the right to receive information about their personal data and to request its correction, blocking or deletion by contacting support @SupEscrow.'
+      }
+    };
 
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) {
-        overlay.classList.remove('open');
+    function applyLanguage(lang) {
+      currentLang = lang;
+      langLabel.textContent = lang.toUpperCase();
+      const t = translations[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.placeholder = t[key];
+          } else {
+            el.innerHTML = t[key];
+          }
+        }
+      });
+      const heroTitle = document.querySelector('.hero h1');
+      if (heroTitle) heroTitle.innerHTML = t.heroTitle;
+      document.querySelectorAll('.section-title').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (key && t[key]) el.innerHTML = t[key];
+      });
+    }
+
+    langToggle.addEventListener('click', () => {
+      const nextLang = currentLang === 'ru' ? 'en' : 'ru';
+      applyLanguage(nextLang);
+    });
+
+    applyLanguage('ru');
+
+    // ===== BURGER MENU =====
+    const burger = document.getElementById('burger');
+    const nav = document.getElementById('mainNav');
+    burger.addEventListener('click', () => {
+      if(nav.style.display === 'flex') { nav.style.display = 'none'; }
+      else { nav.style.display = 'flex'; nav.style.flexDirection = 'column'; nav.style.position = 'absolute'; nav.style.top = '72px'; nav.style.left = '0'; nav.style.right = '0'; nav.style.background = 'var(--surface)'; nav.style.padding = '24px 28px'; nav.style.gap = '16px'; nav.style.borderBottom = '1px solid var(--border)'; nav.style.borderRadius = '0 0 24px 24px'; }
+    });
+    window.addEventListener('resize', () => {
+      if(window.innerWidth > 768) { nav.style.display = 'flex'; nav.style.flexDirection = 'row'; nav.style.position = 'static'; nav.style.background = 'transparent'; nav.style.padding = '0'; nav.style.gap = '32px'; nav.style.borderBottom = 'none'; }
+      else if(nav.style.display !== 'flex') { nav.style.display = 'none'; }
+    });
+
+    // ===== FAQ ACCORDION =====
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-q').addEventListener('click', () => {
+        const wasOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if(!wasOpen) item.classList.add('open');
+      });
+    });
+
+    // ===== MODALS =====
+    function openModal(id) { 
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('open'); 
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    function closeModal(id) { 
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('open'); 
         document.body.style.overflow = '';
       }
+    }
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+      o.addEventListener('click', e => { 
+        if(e.target === o) { 
+          o.classList.remove('open'); 
+          document.body.style.overflow = ''; 
+        } 
+      });
     });
-  });
+    window.openModal = openModal; 
+    window.closeModal = closeModal;
 
-  // Mobile burger menu
-  const burger = document.getElementById('burger');
-  const nav = document.getElementById('mainNav');
-  burger.addEventListener('click', () => {
-    if (nav.style.display === 'flex') {
-      nav.style.display = 'none';
-    } else {
-      nav.style.display = 'flex';
-      nav.style.flexDirection = 'column';
-      nav.style.position = 'absolute';
-      nav.style.top = '68px';
-      nav.style.left = '0';
-      nav.style.right = '0';
-      nav.style.background = 'var(--ink)';
-      nav.style.padding = '20px 28px';
-      nav.style.gap = '16px';
-      nav.style.borderBottom = '1px solid var(--line)';
-    }
-  });
-
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 768) {
-      nav.style.display = 'flex';
-      nav.style.flexDirection = 'row';
-      nav.style.position = 'static';
-      nav.style.background = 'transparent';
-      nav.style.padding = '0';
-      nav.style.gap = '36px';
-      nav.style.borderBottom = 'none';
-    } else if (!nav.style.display || nav.style.display === 'flex') {
-      nav.style.display = 'none';
-    }
-  });
-</script>
+    // ===== COUNTER ANIMATION =====
+    document.querySelectorAll('.stat-item .num[data-count]').forEach(el => {
+      const target = parseInt(el.dataset.count.replace(/[^0-9]/g,''));
+      if(!target) return;
+      let current = 0;
+      const step = Math.ceil(target / 60);
+      const observer = new IntersectionObserver(entries => {
+        if(entries[0].isIntersecting) {
+          const interval = setInterval(() => {
+            current += step;
+            if(current >= target) { current = target; clearInterval(interval); }
+            el.textContent = current + '+';
+          }, 25);
+          observer.unobserve(el);
+        }
+      }, { threshold: 0.5 });
+      observer.observe(el);
+    });
+  </script>
 </body>
 </html>
